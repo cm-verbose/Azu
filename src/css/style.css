@@ -1,0 +1,200 @@
+@font-face {
+  font-family: work-sans;
+  font-display: swap;
+  src: url("../font/work_sans_variable.ttf");
+}
+
+@font-face {
+  font-family: source-han-sans;
+  font-display: swap;
+  src: url("../font/SourceHanSans-VF.ttf");
+}
+
+:root {
+  --text-color-placeholder: #aaa;
+}
+
+*::selection {
+  background-color: #6dffa786;
+}
+
+body {
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  position: absolute;
+  margin: 0;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.Main::-webkit-scrollbar {
+  background-color: transparent;
+  width: 10px;
+  height: 10px;
+}
+
+.Main::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  cursor: pointer;
+}
+
+.ToolBar {
+  height: 12%;
+  width: 100%;
+  position: fixed;
+  box-sizing: border-box;
+  padding: 10px;
+  box-shadow: inset 0 -1px black;
+  display: grid;
+  grid-template-rows: 50% 50%;
+  background-color: white;
+  z-index: 900;
+}
+
+#top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+#bottom {
+  flex-wrap: wrap;
+  align-items: center;
+  display: flex;
+  gap: 1%;
+}
+
+.button-joiner {
+  position: relative;
+  height: 75%;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid black;
+}
+
+#text-format-font {
+  position: relative;
+  height: 75%;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid black;
+  width: 12%;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+#text-format-font > input {
+  display: block;
+  outline: none;
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  border: none;
+}
+
+#text-format-font > input::placeholder {
+  user-select: none;
+}
+
+#format-font-family {
+  display: block;
+  text-overflow: ellipsis;
+}
+
+#format-font-size {
+  text-align: center;
+  width: 3ch;
+  font-weight: 500;
+}
+
+#text-format-inferior-superior {
+  width: 4%;
+}
+
+#text-format {
+  width: 8%;
+}
+
+#text-format > button,
+#text-format-inferior-superior > button {
+  position: relative;
+  font-size: 1.75vh;
+  cursor: pointer;
+  border: 0;
+  aspect-ratio: 1;
+  background-color: transparent;
+  user-select: none;
+}
+
+#title-content {
+  position: relative;
+  width: fit-content;
+}
+
+#title-input {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  text-align: left;
+  width: 20ch;
+}
+
+.Main {
+  position: absolute;
+  top: 15%;
+  width: 100%;
+  height: 80%;
+  overflow: auto;
+}
+
+#editor {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  width: 50%;
+  margin: 0 auto;
+  outline: none;
+  line-height: 1.5;
+  padding-bottom: 25vh;
+  transform-origin: -50% 0;
+}
+
+#editor:empty::before {
+  content: attr(aria-placeholder);
+  user-select: none;
+  pointer-events: none;
+  color: #aaa;
+}
+
+.Footer {
+  position: fixed;
+  top: 100%;
+  transform: translate(0, -100%);
+  height: 5%;
+  width: 100%;
+  box-shadow: inset 0 1px black;
+  background-color: white;
+}
+
+.Footer > #statistics {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.Footer > #statistics > div {
+  display: flex;
+  align-self: center;
+}

@@ -1,13 +1,15 @@
 {
   "name": "azu",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple text editor project",
   "main": "index.js",
   "scripts": {
-    "lint-styles": "npx stylelint \"**/*.css\""
+    "lint": "npx stylelint \"**/*.css\"",
+    "format": "prettier . --write",
+    "watch": "tsc --watch"
   },
   "keywords": [],
-  "author": "",
+  "author": "cmv",
   "license": "ISC",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.7.0",

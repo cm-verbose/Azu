@@ -1,0 +1,4 @@
+bracketSameLine: true
+printWidth: 115
+endOfLine: "lf"
+singleAttributePerLine: false

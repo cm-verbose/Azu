@@ -1,1 +1,7 @@
-{ "extends": ["stylelint-config-standard"] }
+{
+  "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/stylelintrc.json",
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "selector-class-pattern": "^\\w+"
+  }
+}
