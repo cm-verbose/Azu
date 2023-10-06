@@ -2,6 +2,10 @@ export default class Editor {
   editor: HTMLDivElement;
   formatFontSizeInput: HTMLInputElement;
   wordCountContainer: HTMLSpanElement;
+  zoomRangeInput: HTMLInputElement;
+  zoomInput: HTMLInputElement;
+
+  /* Internal State */
   zoomAmount: number;
   MAX_ALLOWED_ZOOM: number;
 
@@ -9,6 +13,8 @@ export default class Editor {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
     this.wordCountContainer = document.querySelector("#word-count") as HTMLDivElement;
     this.formatFontSizeInput = document.querySelector("#format-font-size") as HTMLInputElement;
+    this.zoomRangeInput = document.querySelector("#zoom-range") as HTMLInputElement;
+    this.zoomInput = document.querySelector("#zoom-control-input") as HTMLInputElement;
     this.zoomAmount = 1;
     this.MAX_ALLOWED_ZOOM = 25;
     this.ini();
@@ -28,8 +34,15 @@ export default class Editor {
     this.editor.addEventListener("paste", (e) => this.handlePaste(e));
     this.editor.addEventListener("keydown", (e: KeyboardEvent) => this.handleUndoRedo(e));
     this.formatFontSizeInput.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (e.key.match(/\D/)) return;
+      if (!/Backspace|\d/g.test(e.key)) e.preventDefault();
     });
+    this.formatFontSizeInput.addEventListener("click", () => this.handleInputFocus(this.formatFontSizeInput));
+    this.zoomRangeInput.addEventListener("input", (e: Event) => this.handleRangeZoom(e));
+    this.zoomInput.addEventListener("blur", () => this.handleInputZoom());
+    this.zoomInput.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (!/Backspace|\d/g.test(e.key)) e.preventDefault();
+    });
+    this.zoomInput.addEventListener("click", () => this.handleInputFocus(this.zoomInput));
     this.setWordCount();
   }
 
@@ -114,6 +127,8 @@ export default class Editor {
 
     this.zoomAmount += addedZoom;
     this.editor.style.scale = `${this.zoomAmount}`;
+    this.zoomRangeInput.value = `${this.zoomAmount}`;
+    this.zoomInput.value = `${this.zoomAmount * 100}`;
   }
 
   /** @description zooms only the inner document portion on CTRL + +, CTRL + - */
@@ -129,6 +144,37 @@ export default class Editor {
       if (this.zoomAmount + addedZoom <= 0 || this.zoomAmount + addedZoom >= this.MAX_ALLOWED_ZOOM) return;
       this.zoomAmount += addedZoom;
       this.editor.style.scale = `${this.zoomAmount}`;
+      this.zoomRangeInput.value = `${this.zoomAmount}`;
+      this.zoomInput.value = `${this.zoomAmount * 100}`;
     }
+  }
+
+  /** @description Handles the zoom with a range input (slider) */
+  handleRangeZoom(e: Event) {
+    const target = e.target as HTMLInputElement;
+    const zoomValue: number = parseFloat(target.value);
+    this.zoomInput.value = `${zoomValue * 100}`;
+    this.editor.style.scale = `${zoomValue}`;
+  }
+
+  /** @description Handles the zoom through input */
+  handleInputZoom() {
+    const previousZoom = this.zoomAmount;
+    const zoomAmount: number = parseInt(this.zoomInput.value, 10) / 100;
+    this.zoomAmount = zoomAmount >= this.MAX_ALLOWED_ZOOM ? this.MAX_ALLOWED_ZOOM : zoomAmount;
+
+    if (isNaN(this.zoomAmount)) {
+      this.zoomInput.value = `${previousZoom * 100}`;
+      this.editor.style.scale = `${previousZoom}`;
+      return;
+    }
+    this.zoomInput.value = `${this.zoomAmount * 100}`;
+    this.editor.style.scale = `${this.zoomAmount}`;
+  }
+
+  /** @description Focuses into input while selecting entire input */
+  handleInputFocus(inputElement: HTMLInputElement) {
+    inputElement.focus();
+    inputElement.select();
   }
 }

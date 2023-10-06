@@ -27,12 +27,35 @@ body {
   margin: 0;
 }
 
+noscript {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background-color: white;
+}
+
+noscript > #error-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 75%;
+  padding: 50px;
+  transform: translate(-50%, -50%);
+  border: 1px solid black;
+}
+
+noscript > #error-container > h1 {
+  font-weight: 300;
+}
+
 #app {
   position: relative;
   width: 100vw;
   height: 100vh;
 }
 
+/* Chrome */
 .Main::-webkit-scrollbar {
   background-color: transparent;
   width: 10px;
@@ -42,6 +65,17 @@ body {
 .Main::-webkit-scrollbar-thumb {
   background-color: #aaa;
   cursor: pointer;
+}
+
+/* Firefox */
+.Main::-moz-scrollbar-track {
+  background-color: transparent;
+}
+
+.Main::-moz-scrollbar-thumb {
+  background-color: #aaa;
+  height: 10px;
+  width: 10px;
 }
 
 .ToolBar {
@@ -82,10 +116,10 @@ body {
 #text-format-font {
   position: relative;
   height: 75%;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 80% 20%;
   border: 1px solid black;
-  width: 12%;
+  width: 10%;
   padding: 0 5px;
   box-sizing: border-box;
 }
@@ -177,6 +211,8 @@ body {
 
 .Footer {
   position: fixed;
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
   top: 100%;
   transform: translate(0, -100%);
   height: 5%;
@@ -197,4 +233,71 @@ body {
 .Footer > #statistics > div {
   display: flex;
   align-self: center;
+}
+
+.Footer > #footer-options {
+  display: flex;
+  justify-content: center;
+}
+
+.Footer > #footer-options > div {
+  height: fit-content;
+  align-self: center;
+}
+
+#manage-zoom-cont {
+  display: grid;
+  grid-template-columns: 70% auto;
+  width: 250px;
+}
+
+#zoom-range {
+  position: relative;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  width: 150px;
+  outline: none;
+}
+
+/* Chrome */
+#zoom-range::-webkit-slider-runnable-track {
+  background-color: #aaa;
+  height: 0.5rem;
+}
+#zoom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  width: 5px;
+  background-color: #202020;
+  cursor: pointer;
+}
+
+/* Firefox */
+#zoom-range::-moz-range-track {
+  background-color: #aaa;
+  height: 0.5rem;
+}
+
+#zoom-range::-moz-range-thumb {
+  appearance: none;
+  height: 20px;
+  width: 5px;
+  background-color: #202020;
+  border-radius: 0px;
+  border: none;
+  cursor: pointer;
+}
+
+#zoom-control-input {
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  width: 4ch;
+  text-align: center;
 }
