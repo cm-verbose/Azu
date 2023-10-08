@@ -258,6 +258,7 @@ noscript > #error-container > h1 {
   background-color: transparent;
   width: 150px;
   outline: none;
+  cursor: pointer;
 }
 
 /* Chrome */
@@ -274,7 +275,6 @@ noscript > #error-container > h1 {
   height: 20px;
   width: 5px;
   background-color: #202020;
-  cursor: pointer;
 }
 
 /* Firefox */
@@ -290,7 +290,6 @@ noscript > #error-container > h1 {
   background-color: #202020;
   border-radius: 0px;
   border: none;
-  cursor: pointer;
 }
 
 #zoom-control-input {

@@ -1,8 +1,8 @@
 "use strict";
 class SWorker {
-    constructor() {
-        this.ini();
-    }
-    ini() { }
+  constructor() {
+    this.ini();
+  }
+  ini() {}
 }
 new SWorker();
