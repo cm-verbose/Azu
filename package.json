@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "npx stylelint \"**/*.css\"",
     "format": "prettier . --write",
+    "format-sw": "cd src && tsc sw.ts && cd ..",
     "watch": "tsc --watch"
   },
   "keywords": [],

@@ -1,37 +1,33 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import Editor from "./modules/editor.js";
 class Main {
-  constructor() {
-    this.titleInput = document.querySelector("#title-input");
-    this.ini();
-  }
-  /** @description Initializes the class */
-  ini() {
-    this.setInitialDocumentTitle();
-    this.titleInput.addEventListener("input", () => this.handleTitleInput());
-    this.titleInput.addEventListener("blur", () => this.handleTitleBlur());
-    new Editor();
-  }
-  /** @description Handles page title change based on input */
-  handleTitleInput() {
-    const content = this.titleInput.value;
-    if (content.replace(/\s*/g, "") === "") {
-      document.title = "azu - Unnamed";
-    } else {
-      const MAX_TITLE_LENGTH = 50;
-      const ellidedString =
-        content.length >= MAX_TITLE_LENGTH ? `${content.substring(0, MAX_TITLE_LENGTH - 3)}...` : content;
-      document.title = `azu - ${ellidedString}`;
+    constructor() {
+        this.ini();
     }
-  }
-  /** @description Sets page value  */
-  handleTitleBlur() {
-    const content = this.titleInput.value;
-    if (content.replace(/\s*/g, "") !== "") return;
-    this.titleInput.value = "Unnamed";
-  }
-  /** @description Handle initial page content  */
-  setInitialDocumentTitle() {
-    document.title = "azu - Document 1";
-  }
+    /** @description Initializes the App */
+    ini() {
+        this.instantiateServiceWorker();
+        new Editor();
+    }
+    /** @description instantiates a Service worker */
+    instantiateServiceWorker() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!("serviceWorker" in navigator)) {
+                console.error("[Service worker] : Unavailable");
+                return;
+            }
+            yield navigator.serviceWorker.register("./sw.js", {
+                scope: "./src/",
+            });
+        });
+    }
 }
 new Main();

@@ -20,13 +20,14 @@
   <link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128x128.png" />
   <link rel="apple-touch-icon" sizes="64x64" href="./icons/icon-64x64.png" />
   <link rel="stylesheet" type="text/css" href="./css/style.css" />
+  <link rel="stylesheet" media="print" type="text/css" href="./css/print.css" />
   <title>azu</title>
 </head>
 
 <body>
   <noscript>
-    <div id="error-container">
-      <h1>It seems that JavaScript has been disabled</h1>
+    <div id="error-container" lang="en">
+      <h1>JavaScript has been disabled </h1>
       <p>
         Please enable <a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a> to
         continue.
@@ -58,8 +59,10 @@
       </div>
     </header>
     <section class="Main">
-      <div lang="zh-hans" id="editor" contenteditable="true" aria-placeholder="Start typing" spellcheck="false"
-        role="textbox" aria-label="editor"></div>
+      <div lang="zh-hans" id="editor" contenteditable="true" spellcheck="false"
+        role="textbox" aria-label="editor">
+        <div id="initial-content" aria-placeholder="Start typing"></div>
+      </div>
     </section>
     <footer class="Footer">
       <div id="statistics">
@@ -67,7 +70,7 @@
       </div>
       <div id="footer-options">
         <div id="manage-zoom-cont">
-          <input type="range" aria-label="zoom-percent-slider" id="zoom-range" step="0.25" max="25" min="0.25" value="1"
+          <input type="range" aria-label="zoom-percent-slider" id="zoom-range" step="0.25" max="5" min="0.25" value="1"
             defaultValue="1" />
           <span>
             <input type="text" placeholder="100" maxlength="4" aria-label="zoom-percent-input" id="zoom-control-input"
@@ -80,4 +83,5 @@
   </div>
   <script src="./js/script.js" type="module"></script>
 </body>
+
 </html>

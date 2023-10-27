@@ -1,0 +1,9 @@
+@page {
+  size: auto;
+  margin: 0;
+}
+
+.ToolBar, .Footer{
+  display: none;
+}
+

@@ -1,6 +1,4 @@
 {
-  "allowImportingTsExtensions": true,
-  "noEmit": true,
   "compilerOptions": {
     "target": "ES2016",
     "module": "ES6",
