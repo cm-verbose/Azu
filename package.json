@@ -7,6 +7,7 @@
     "lint": "npx stylelint \"**/*.css\"",
     "format": "prettier . --write",
     "format-sw": "cd src && tsc sw.ts && cd ..",
+    "recheck": "npm run format && format-sw && npm run watch && npm run lint",
     "watch": "tsc --watch"
   },
   "keywords": [],

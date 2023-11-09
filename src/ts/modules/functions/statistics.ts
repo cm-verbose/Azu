@@ -1,3 +1,10 @@
+/**
+ *
+ * @description initialises events relative to word count, word length, mistakes etc.
+ * or document hence, statistics.
+ *
+ **/
+
 export default class Statictics {
   editor: HTMLDivElement;
   wordCountContainer: HTMLDivElement;
@@ -10,9 +17,6 @@ export default class Statictics {
     this.initializeStatistics();
   }
 
-  /**
-   * @description initialises events relative to word count, word length, mistakes etc.
-   * or document hence, statistics. */
   private initializeStatistics() {
     this.configureWordCount();
   }

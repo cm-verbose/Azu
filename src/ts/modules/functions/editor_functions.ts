@@ -14,7 +14,7 @@ export default class EditorFunctions {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
     this.formatFontSizeInput = document.querySelector("#format-font-size") as HTMLInputElement;
     this.initialDiv = document.querySelector("#initial-content") as HTMLDivElement;
-    this.configureEditorFunctions(); 
+    this.configureEditorFunctions();
   }
 
   private configureEditorFunctions() {
@@ -23,7 +23,7 @@ export default class EditorFunctions {
     this.editor.addEventListener("beforeinput", (e: Event) => this.handleEditorInput(e as InputEvent));
     this.formatFontSizeInput.addEventListener("keydown", (e: KeyboardEvent) => this.enforeDigitOnly(e));
     this.formatFontSizeInput.addEventListener("click", () => this.handleInputFocus(this.formatFontSizeInput));
-    this.editor.addEventListener("keydown", (e:KeyboardEvent) => this.restrictInitialDiv(e)); 
+    this.editor.addEventListener("keydown", (e: KeyboardEvent) => this.restrictInitialDiv(e));
   }
 
   /** @description Clears the editor when empty (remaining <div>, <br> elements) */
@@ -81,10 +81,10 @@ export default class EditorFunctions {
   }
 
   /** @description Prevents the initial div from being deleted */
-  restrictInitialDiv(e:KeyboardEvent){
-    if(e.key === "Backspace"){
-      if(this.initialDiv.innerText.replace(/\n|\s/g, "") === ""){
-        e.preventDefault(); 
+  restrictInitialDiv(e: KeyboardEvent) {
+    if (e.key === "Backspace") {
+      if (this.initialDiv.innerText.replace(/\n|\s/g, "") === "") {
+        e.preventDefault();
       }
     }
   }

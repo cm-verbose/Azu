@@ -14,11 +14,13 @@
   --background-color-primary: white;
   --background-color-secondary: #aaa;
   --border-color-primary: black;
-  --border-color-secondary: black; 
+  --border-color-secondary: black;
   --scrollbar-thumb-color: #202020;
+  --text-color-error: #f77;
   --text-color-placeholder: #aaa;
-  --text-color-primary: black; 
+  --text-color-primary: black;
   --text-color-selected: #6dffa786;
+  --light-dark-transition-duration: 0.5s; 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,11 +28,30 @@
     --background-color-primary: black;
     --background-color-secondary: #202020;
     --border-color-primary: #aaa;
-    --border-color-secondary: #404040; 
+    --border-color-secondary: #404040;
     --scrollbar-thumb-color: #404040;
     --text-color-placeholder: #ccc;
-    --text-color-primary: #ddd; 
+    --text-color-primary: #ddd;
     --text-color-selected: #6dffa786;
+  }
+
+  body.light{
+    --background-color-primary: white;
+    --background-color-secondary: #aaa;
+    --border-color-primary: black;
+    --border-color-secondary: black;
+    --scrollbar-thumb-color: #202020;
+    --text-color-error: #f77;
+    --text-color-placeholder: #aaa;
+    --text-color-primary: black;
+    --text-color-selected: #6dffa786;
+  }
+
+  body.dark #close-settings > img, body.dark #setting-button > img {
+    filter: none!important;
+  }
+  body.light #close-settings > img, body.light #setting-button > img {
+    filter: brightness(0);
   }
 }
 
@@ -47,6 +68,20 @@ body {
   overflow-y: hidden;
   position: absolute;
   margin: 0;
+  width: 100%;
+  height: 100%;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
+}
+
+body::-webkit-scrollbar{
+  background-color: transparent;
+}
+
+body::-webkit-scrollbar-thumb{
+  background-color: var(--background-color-secondary);
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: background-color;
 }
 
 noscript {
@@ -89,7 +124,7 @@ noscript > #error-container > h1 {
   cursor: pointer;
 }
 
-.Main::-webkit-scrollbar-corner{
+.Main::-webkit-scrollbar-corner {
   display: none;
 }
 
@@ -104,7 +139,7 @@ noscript > #error-container > h1 {
   width: 10px;
 }
 
-.Main::-moz-scrollbar-corner{
+.Main::-moz-scrollbar-corner {
   display: none;
 }
 
@@ -119,6 +154,8 @@ noscript > #error-container > h1 {
   grid-template-rows: 50% 50%;
   background-color: var(--background-color-primary);
   z-index: 900;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
 }
 
 #top {
@@ -161,6 +198,8 @@ noscript > #error-container > h1 {
   outline: none;
   font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
   border: none;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
 }
 
 #text-format-font > input::placeholder {
@@ -215,6 +254,8 @@ noscript > #error-container > h1 {
   text-overflow: ellipsis;
   text-align: left;
   width: 20ch;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
 }
 
 .Main {
@@ -237,8 +278,8 @@ noscript > #error-container > h1 {
   transform-origin: -50% 0;
 }
 
-#editor > #initial-content:empty::before{
-  content: attr(aria-placeholder);
+#editor > #initial-content:empty::before {
+  content: attr(data-placeholder);
   pointer-events: none;
   color: var(--text-color-placeholder);
 }
@@ -253,6 +294,8 @@ noscript > #error-container > h1 {
   width: 100%;
   box-shadow: inset 0 1px var(--border-color-primary);
   background-color: var(--background-color-primary);
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
 }
 
 .Footer > #statistics {
@@ -338,4 +381,273 @@ noscript > #error-container > h1 {
   border: none;
   width: 4ch;
   text-align: center;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
+}
+
+.error {
+  text-decoration: underline;
+  text-decoration-color: var(--text-color-error);
+  text-underline-position: under;
+}
+
+#option-configuration {
+  align-self: flex-end;
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.icon-button {
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
+  background-color: var(--background-color-primary);
+  cursor: pointer;
+  position: relative;
+  border: none;
+  height: 32px;
+  width: 32px;
+  outline: none;
+}
+
+.icon-button > img {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  user-select: none;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+}
+
+/*
+
+SETTINGS
+
+*/
+
+
+#settings-view {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  width: 50vw;
+  padding-bottom: 25vh;
+}
+
+#settings-view header {
+  margin-top: 50px;
+  display: flex;
+  justify-content: end;
+}
+
+#settings-view header > hgroup > button {
+  background-color: var(--background-color-primary);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: background-color;
+}
+
+#settings-view header > hgroup > button > img{
+  position: relative;
+  height: 28px;
+  width: 28px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+#settings-view hr {
+  margin: 32px 0;
+  --border-color-secondary: #eee;
+  border-color: var(--border-color-secondary);
+}
+
+#settings-view > h1 {
+  font-weight: 400;
+  font-size: 54px;
+}
+
+#settings-view h2 {
+  font-weight: 300;
+  font-size: 48px;
+}
+
+#settings-view h3 {
+  font-weight: 300;
+  font-size: 42px;
+}
+
+select {
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  user-select: none;
+  padding: 5px 10px;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  background-color: var(--background-color-primary);
+  color: var(--text-color-primary);
+  border: 1px solid var(--border-color-primary);
+  width: fit-content;
+  transition-duration: var(--light-dark-transition-duration);
+  transition-property: color, background-color;
+}
+
+select option {
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  background-color: var(--background-color-primary);
+}
+
+select option:checked{
+  background-color: var(--text-color-selected);
+}
+
+#settings-apprearance-themes {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 5px;
+  height: 500px;
+}
+
+#settings-apprearance-themes > div {
+  display: flex;
+  border: 1px solid var(--border-color-secondary);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* 
+
+DARK THEME (VIA JS)
+
+*/
+
+body.dark {
+  background-color: black;
+  color: #ddd;
+}
+
+body.dark::-webkit-scrollbar-thumb{
+  background-color: #202020;
+}
+
+body.dark noscript{
+  background-color: black;
+}
+
+body.dark noscript > #error-container{
+  border: 1px solid #aaa;
+}
+
+body.dark .Main::-webkit-scrollbar-thumb{
+  background-color: #202020;
+}
+
+body.dark .Main::-moz-scrollbar-thumb {
+  background-color: #202020;
+}
+
+body.dark .ToolBar {
+  box-shadow: inset 0 -1px #aaa;
+  background-color: black;
+}
+
+body.dark .button-joiner {
+  border: 1px solid #404040;
+}
+
+body.dark #text-format-font {
+  border: 1px solid #404040;
+}
+
+body.dark #text-format-font > input {
+  color: #ddd;
+  background-color: black;
+}
+
+body.dark #text-format > button,
+body.dark #text-format-inferior-superior > button {
+  color: #ddd;
+}
+
+body.dark #title-input {
+  background-color: black;
+  color: #ddd;
+}
+
+body.dark #editor > #initial-content:empty::before {
+  color: #ccc;
+}
+
+body.dark .Footer {
+  box-shadow: inset 0 1px #aaa;
+  background-color: black;
+}
+
+body.dark #zoom-range::-webkit-slider-runnable-track {
+  background-color: #202020;
+}
+
+body.dark #zoom-range::-webkit-slider-thumb {
+  background-color: #404040;
+}
+
+body.dark #zoom-range::-moz-range-track{
+  background-color: #202020;
+}
+
+body.dark #zoom-range::-moz-range-thumb{
+  background-color: #404040;
+}
+
+body.dark #zoom-control-input {
+  color: #ddd;
+  background-color: black;
+}
+
+body.dark .icon-button{
+  background-color: black;
+}
+
+body.dark #settings-view header > hgroup > button {
+  background-color: black;
+}
+
+body.dark #settings-view hr {
+  border-color: #eee;
+}
+
+body.dark #settings-apprearance-themes > div{
+  border: 1px solid #404040;
+}
+
+body.dark select {
+  background-color: black;
+  color: #ddd;
+  border: 1px solid #aaa;
+}
+
+body.dark select option {
+  font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
+  background-color: black
+}
+
+body.dark #close-settings > img, body.dark #setting-button > img {
+  /* 
+    Since the logo is originally filled as black, we can say that invert(1), 
+    is white (#FFFFFF). Inversion just takes this as a spectrum of black to 
+    white, from #000000 to #FFFFFF. Since 0xEEEEEE/0xFFFFFF is 93.33%, we can 
+    say that at 93.33% the color is #EEEEEE. So we have :
+  */
+  filter: invert(calc((280/3)));
 }

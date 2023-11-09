@@ -18,7 +18,11 @@ export default class Storage {
     /** @description Instantiates localStorage */
     instantiateLocalStorage() {
         window.addEventListener("beforeunload", () => {
+            const currentSettings = {
+                theme: document.body.getAttribute("class"),
+            };
             localStorage.setItem("zoomLevel", this.zoomInput.value);
+            localStorage.setItem("Settings", JSON.stringify(currentSettings));
         });
         window.addEventListener("load", () => {
             const zoomLevel = localStorage.getItem("zoomLevel");
@@ -27,6 +31,21 @@ export default class Storage {
                 this.zoomRangeInput.value = `${this.zoomAmount / 100}`;
                 this.zoomInput.value = `${this.zoomAmount}`;
                 this.editor.style.scale = `${this.zoomAmount / 100}`;
+            }
+            const fetchedSettings = localStorage.getItem("Settings");
+            if (fetchedSettings === null)
+                return;
+            const settings = JSON.parse(fetchedSettings);
+            for (const [key, value] of Object.entries(settings)) {
+                switch (key) {
+                    case "theme":
+                        {
+                            if (value === null)
+                                return;
+                            document.body.setAttribute("class", `${value}`);
+                        }
+                        break;
+                }
             }
         });
     }

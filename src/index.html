@@ -2,34 +2,41 @@
 <html lang="en" prefix="og: https://ogp.me/ns#">
 
 <head>
+  <base target="_blank" />
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
   <meta name="description" content="A simple rich text editor" />
   <meta name="google" content="notranslate" />
-  <meta name="keywords" content="rich text editor" />
+  <meta name="keywords" content="rich text editor, minimalist, webapp" />
   <meta name="theme-color" content="#75E19A" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="og:title" content="Azu" />
+  <meta name="og:description" content="A simple rich text editor" />
   <meta name="og:type" content="website" />
   <meta name="og:url" content="https://cm-verbose.github.io/Azu/" />
   <meta name="og:image" content="https://cm-verbose.github.io/Azu/icons/icon-1024x1024.png" />
-  <link rel="shortcut icon" href="./icons/icon-144x144.png" type="image/png" />
-  <link rel="manifest" href="./data/webmanifest.webmanifest" type="application/manifest+json " />
+  <meta name="og:image:alt" content="A simple green pen" />
+  <meta name="og:image:type" content="image/png" />
   <link rel="apple-touch-icon" sizes="1024x1024" href="./icons/icon-1024x1024.png" />
   <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512x512.png" />
   <link rel="apple-touch-icon" sizes="256x256" href="./icons/icon-256x256.png" />
   <link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128x128.png" />
   <link rel="apple-touch-icon" sizes="64x64" href="./icons/icon-64x64.png" />
+  <link rel="author" href="humans.txt" />
+  <link rel="cannonical" href="https://cm-verbose.github.io/Azu/" />
+  <link rel="manifest" href="./data/webmanifest.webmanifest" type="application/manifest+json" />
+  <link rel="shortcut icon" href="./icons/icon-144x144.png" type="image/png" />
+  <link rel="sitemap" href="./sitemap.xml" title="Azu sitemap" type="appplication/xml" />
   <link rel="stylesheet" type="text/css" href="./css/style.css" />
-  <link rel="stylesheet" media="print" type="text/css" href="./css/print.css" />
-  <title>azu</title>
+  <link rel="stylesheet" type="text/css" media="print" href="./css/print.css" />
+  <title>Azu</title>
 </head>
 
-<body>
+<body class="system">
   <noscript>
     <div id="error-container" lang="en">
-      <h1>JavaScript has been disabled </h1>
+      <h1>JavaScript has been disabled</h1>
       <p>
-        Please enable <a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a> to
+        Please enable <a href="https://en.wikipedia.org/wiki/JavaScript">JavaScript</a> to
         continue.
       </p>
     </div>
@@ -40,13 +47,18 @@
         <div id="title-content" spellcheck="false">
           <input type="text" placeholder="Input title" value="Document 1" id="title-input" maxlength="256" />
         </div>
+        <div id="option-configuration">
+          <button class="icon-button" id="setting-button">
+            <img src="./svg/settings.svg" alt="settings" />
+          </button>
+        </div>
       </div>
       <div id="bottom">
         <div id="text-format" class="button-joiner">
           <button id="format-bold"><strong>B</strong></button>
           <button id="format-italics"><em>I</em></button>
           <button id="format-underline"><u>U</u></button>
-          <button id="format-strike"><strike>S</strike></button>
+          <button id="format-strike"><del>S</del></button>
         </div>
         <div id="text-format-inferior-superior" class="button-joiner">
           <button id="format-sup">x<sub>y</sub></button>
@@ -58,12 +70,11 @@
         </div>
       </div>
     </header>
-    <section class="Main">
-      <div lang="zh-hans" id="editor" contenteditable="true" spellcheck="false"
-        role="textbox" aria-label="editor">
-        <div id="initial-content" aria-placeholder="Start typing"></div>
+    <div class="Main">
+      <div lang="zh-hans" id="editor" contenteditable="true" spellcheck="false" role="textbox" aria-label="editor">
+        <div id="initial-content" data-placeholder="Start typing !"></div>
       </div>
-    </section>
+    </div>
     <footer class="Footer">
       <div id="statistics">
         <div><span id="word-count">no words</span></div>
@@ -81,7 +92,40 @@
       </div>
     </footer>
   </div>
+  <div id="settings-view" style="display: none;">
+    <header>
+      <hgroup>
+        <button id="close-settings">
+          <img src="./svg/close.svg" alt="close settings button">
+        </button>
+      </hgroup>
+    </header>
+    <h1>Settings</h1>
+    <p>Configure the editor through these settings.</p>
+    <hr>
+    <section>
+      <h2>Appearance</h2>
+      <section>
+        <h3>Interface Language</h3>
+        <select id="language-options" >
+          <option lang="en">English</option>
+          <option lang="fr">Français</option>
+          <option lang="ja">日本語</option>
+          <option lang="zh-hans">中文（简体汉字）</option>
+          <option lang="zh-hant">中文（繁體漢字）</option>
+        </select>
+      </section>
+      <section>
+        <h3>Themes</h3>
+        <div id="settings-apprearance-themes">
+          <div id="light"><span>Light</span></div>
+          <div id="dark"><span>Dark</span></div>
+          <div id="system"><span>System (<span id="current-system-scheme"></span></span>)</div>
+          <div id="custom"><span>Custom</span></div>
+        </div>
+      </section>
+    </section>
+  </div>
   <script src="./js/script.js" type="module"></script>
 </body>
-
 </html>

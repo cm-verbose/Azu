@@ -1,3 +1,9 @@
+/**
+ *
+ * @description initialises events relative to word count, word length, mistakes etc.
+ * or document hence, statistics.
+ *
+ **/
 export default class Statictics {
     constructor() {
         this.editor = document.querySelector("#editor");
@@ -5,9 +11,6 @@ export default class Statictics {
         this.COUNT_INTERVAL = 5000;
         this.initializeStatistics();
     }
-    /**
-     * @description initialises events relative to word count, word length, mistakes etc.
-     * or document hence, statistics. */
     initializeStatistics() {
         this.configureWordCount();
     }

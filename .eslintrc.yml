@@ -20,6 +20,6 @@ rules:
   semi:
     - error
     - always
-  max-len: 
-    - error 
+  max-len:
+    - error
     - 110

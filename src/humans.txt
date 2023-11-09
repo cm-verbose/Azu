@@ -1,0 +1,14 @@
+/* TEAM */
+
+  Developper : Cmvb 
+  Github : https://github.com/cm-verbose 
+  Location : Canada
+
+/* SITE */
+
+	Last update: 2023/11/03
+	Language: English
+	Doctype: HTML5
+	IDE: VSCode
+
+	
