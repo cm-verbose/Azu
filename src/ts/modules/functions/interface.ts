@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * @description Instantiates User Interface events and functionality
- * 
+ *
  */
 
 export default class UserInterface {
@@ -14,7 +14,7 @@ export default class UserInterface {
   zoomRangeInput: HTMLInputElement;
   zoomInput: HTMLInputElement;
   zoomCurr: number;
-  MAX_ALLOWED_ZOOM: number;
+  readonly MAX_ALLOWED_ZOOM: number;
 
   constructor() {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
@@ -164,6 +164,7 @@ export default class UserInterface {
    * @description Handles events related to setting configuration
    *
    */
+
   private instantiateSettingsUI() {
     this.settingsButton.addEventListener("click", () => this.openSettings());
     this.settingsCloseButton.addEventListener("click", () => this.closeSettings());
@@ -173,14 +174,13 @@ export default class UserInterface {
   private openSettings() {
     this.mainView.style.display = "none";
     this.settingsView.style.display = "block";
-    document.body.style.overflowY = "scroll"; 
-    
+    document.body.style.overflowY = "scroll";
   }
 
   /** @description Opens the main view, while closing the settings view */
   private closeSettings() {
     this.settingsView.style.display = "none";
     this.mainView.style.display = "block";
-    document.body.style.overflowY = "hidden"; 
+    document.body.style.overflowY = "hidden";
   }
 }

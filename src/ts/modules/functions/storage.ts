@@ -48,13 +48,15 @@ export default class Storage {
       const fetchedSettings = localStorage.getItem("Settings");
       if (fetchedSettings === null) return;
 
-      const settings = JSON.parse(fetchedSettings); 
-      for(const [key, value] of Object.entries(settings)){
-        switch(key){
-          case "theme" : {
-            if(value === null) return; 
-            document.body.setAttribute("class", `${value}`); 
-          } break; 
+      const settings = JSON.parse(fetchedSettings);
+      for (const [key, value] of Object.entries(settings)) {
+        switch (key) {
+          case "theme":
+            {
+              if (value === null) return;
+              document.body.setAttribute("class", `${value}`);
+            }
+            break;
         }
       }
     });

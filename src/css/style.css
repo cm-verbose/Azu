@@ -20,7 +20,7 @@
   --text-color-placeholder: #aaa;
   --text-color-primary: black;
   --text-color-selected: #6dffa786;
-  --light-dark-transition-duration: 0.5s; 
+  --light-dark-transition-duration: 0.5s;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,7 +35,7 @@
     --text-color-selected: #6dffa786;
   }
 
-  body.light{
+  body.light {
     --background-color-primary: white;
     --background-color-secondary: #aaa;
     --border-color-primary: black;
@@ -47,10 +47,20 @@
     --text-color-selected: #6dffa786;
   }
 
-  body.dark #close-settings > img, body.dark #setting-button > img {
-    filter: none!important;
+  body.dark #close-settings > img,
+  body.dark #setting-button > img {
+    filter: none !important;
   }
-  body.light #close-settings > img, body.light #setting-button > img {
+  body.light #close-settings > img,
+  body.light #setting-button > img {
+    filter: brightness(0);
+  }
+
+  body.dark .button-joiner > button[id^="format-justify"] > img {
+    filter: none !important;
+  }
+
+  body.light .button-joiner > button[id^="format-justify"] {
     filter: brightness(0);
   }
 }
@@ -74,11 +84,11 @@ body {
   transition-property: color, background-color;
 }
 
-body::-webkit-scrollbar{
+body::-webkit-scrollbar {
   background-color: transparent;
 }
 
-body::-webkit-scrollbar-thumb{
+body::-webkit-scrollbar-thumb {
   background-color: var(--background-color-secondary);
   transition-duration: var(--light-dark-transition-duration);
   transition-property: background-color;
@@ -237,6 +247,24 @@ noscript > #error-container > h1 {
   user-select: none;
 }
 
+.button-joiner > button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.button-joiner > button[id^="format-justify"] {
+  width: 30px;
+}
+
+.button-joiner > button > img {
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  width: 15px;
+  height: 15px;
+}
+
 #title-content {
   position: relative;
   width: fit-content;
@@ -284,6 +312,22 @@ noscript > #error-container > h1 {
   color: var(--text-color-placeholder);
 }
 
+#editor > div[data-text-align="left"] {
+  text-align: left;
+}
+
+#editor > div[data-text-align="center"] {
+  text-align: center;
+}
+
+#editor > div[data-text-align="right"] {
+  text-align: right;
+}
+
+#editor > div[data-text-align="justify"] {
+  text-align: justify;
+}
+
 .Footer {
   position: fixed;
   display: grid;
@@ -320,6 +364,11 @@ noscript > #error-container > h1 {
 .Footer > #footer-options > div {
   height: fit-content;
   align-self: center;
+}
+
+#zoom-percent-sign {
+  font-size: 16px;
+  user-select: none;
 }
 
 #manage-zoom-cont {
@@ -427,7 +476,6 @@ SETTINGS
 
 */
 
-
 #settings-view {
   position: absolute;
   left: 50%;
@@ -453,7 +501,7 @@ SETTINGS
   transition-property: background-color;
 }
 
-#settings-view header > hgroup > button > img{
+#settings-view header > hgroup > button > img {
   position: relative;
   height: 28px;
   width: 28px;
@@ -506,7 +554,7 @@ select option {
   background-color: var(--background-color-primary);
 }
 
-select option:checked{
+select option:checked {
   background-color: var(--text-color-selected);
 }
 
@@ -526,6 +574,31 @@ select option:checked{
   user-select: none;
 }
 
+/*
+
+Context menu
+
+*/
+
+#context-menu {
+  position: fixed;
+  background-color: var(--background-color-primary);
+  border: 1px solid var(--border-color-primary);
+  z-index: 9999;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+#main-cover {
+  position: fixed;
+  top: 0px;
+  left: 0px; 
+  height: 100%;
+  width: 100%; 
+  background-color: transparent;
+  z-index: 9998;
+}
+
 /* 
 
 DARK THEME (VIA JS)
@@ -537,19 +610,19 @@ body.dark {
   color: #ddd;
 }
 
-body.dark::-webkit-scrollbar-thumb{
+body.dark::-webkit-scrollbar-thumb {
   background-color: #202020;
 }
 
-body.dark noscript{
+body.dark noscript {
   background-color: black;
 }
 
-body.dark noscript > #error-container{
+body.dark noscript > #error-container {
   border: 1px solid #aaa;
 }
 
-body.dark .Main::-webkit-scrollbar-thumb{
+body.dark .Main::-webkit-scrollbar-thumb {
   background-color: #202020;
 }
 
@@ -580,6 +653,10 @@ body.dark #text-format-inferior-superior > button {
   color: #ddd;
 }
 
+body.dark .button-joiner > button[id^="format-justify"] > img {
+  filter: invert(calc((280 / 3)));
+}
+
 body.dark #title-input {
   background-color: black;
   color: #ddd;
@@ -602,11 +679,11 @@ body.dark #zoom-range::-webkit-slider-thumb {
   background-color: #404040;
 }
 
-body.dark #zoom-range::-moz-range-track{
+body.dark #zoom-range::-moz-range-track {
   background-color: #202020;
 }
 
-body.dark #zoom-range::-moz-range-thumb{
+body.dark #zoom-range::-moz-range-thumb {
   background-color: #404040;
 }
 
@@ -615,7 +692,7 @@ body.dark #zoom-control-input {
   background-color: black;
 }
 
-body.dark .icon-button{
+body.dark .icon-button {
   background-color: black;
 }
 
@@ -627,7 +704,7 @@ body.dark #settings-view hr {
   border-color: #eee;
 }
 
-body.dark #settings-apprearance-themes > div{
+body.dark #settings-apprearance-themes > div {
   border: 1px solid #404040;
 }
 
@@ -639,15 +716,16 @@ body.dark select {
 
 body.dark select option {
   font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
-  background-color: black
+  background-color: black;
 }
 
-body.dark #close-settings > img, body.dark #setting-button > img {
+body.dark #close-settings > img,
+body.dark #setting-button > img {
   /* 
-    Since the logo is originally filled as black, we can say that invert(1), 
+    Since the icons is originally filled as black, we can say that invert(1), 
     is white (#FFFFFF). Inversion just takes this as a spectrum of black to 
     white, from #000000 to #FFFFFF. Since 0xEEEEEE/0xFFFFFF is 93.33%, we can 
-    say that at 93.33% the color is #EEEEEE. So we have :
+    say that at 93.33% (simplfies to 280/3) the color is #EEEEEE. So we have :
   */
-  filter: invert(calc((280/3)));
+  filter: invert(calc((280 / 3)));
 }

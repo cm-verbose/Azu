@@ -22,4 +22,4 @@ rules:
     - always
   max-len:
     - error
-    - 110
+    - 115

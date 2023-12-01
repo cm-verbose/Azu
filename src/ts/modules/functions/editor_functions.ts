@@ -5,6 +5,8 @@
  *
  **/
 
+import { TextFormatOptionString } from "../../types";
+
 export default class EditorFunctions {
   editor: HTMLDivElement;
   formatFontSizeInput: HTMLInputElement;
@@ -50,9 +52,13 @@ export default class EditorFunctions {
       e.preventDefault();
       const secondNode = document.createElement("div");
       secondNode.innerText = "\u200B";
-      this.initialDiv.after(secondNode);
 
-      console.log(secondNode);
+      const align = this.initialDiv.getAttribute("data-text-align");
+      const possibleAlignments: Array<TextFormatOptionString> = ["left", "center", "right", "justify"];
+      if (align && possibleAlignments.includes(align as TextFormatOptionString)) {
+        secondNode.setAttribute("data-text-align", align);
+      }
+      this.initialDiv.after(secondNode);
       setTimeout(() => {
         const range = new Range();
         range.setStart(secondNode, 0);
@@ -84,7 +90,19 @@ export default class EditorFunctions {
   restrictInitialDiv(e: KeyboardEvent) {
     if (e.key === "Backspace") {
       if (this.initialDiv.innerText.replace(/\n|\s/g, "") === "") {
-        e.preventDefault();
+        const selection = window.getSelection();
+        if (!selection) return;
+        let parentNode = selection.anchorNode;
+
+        /** recursively traverse */
+        if (parentNode && parentNode.parentElement !== this.editor) {
+          while (parentNode !== null && parentNode.parentElement !== this.editor) {
+            parentNode = parentNode?.parentElement;
+          }
+        }
+        if (parentNode === this.initialDiv) {
+          e.preventDefault();
+        }
       }
     }
   }

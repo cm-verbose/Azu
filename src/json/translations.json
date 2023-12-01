@@ -1,0 +1,69 @@
+{
+  "en": {
+    "format_text_button": {
+      "bold": "B",
+      "italic": "I",
+      "underline": "U",
+      "strike": "S",
+      "empty_font_name_placeholder": "Font family"
+    },
+    "document_initial_title": "Document 1",
+    "document_no_title_placeholder": "Input title",
+    "document_place_holder": "Start writing !",
+    "settings": {
+      "title": "Settings",
+      "description": "Configure the editor through these settings.",
+
+      "accessibility": {
+        "title": "Accessibility",
+        "interface_language": {
+          "title": "Interface Language"
+        }
+      },
+
+      "appearance": {
+        "title": "Appearance",
+        "themes": {
+          "dark": "light",
+          "light": "dark",
+          "system": "system",
+          "custom": "custom"
+        }
+      }
+    }
+  },
+
+  "fr": {
+    "format_text_button": {
+      "bold": "G",
+      "italic": "I",
+      "underline": "S",
+      "strike": "R",
+      "empty_font_name_placeholder": "Police de caractère"
+    },
+    "document_initial_title": "Document 1",
+    "document_no_title_placeholder": "Saissisez un titre",
+    "document_place_holder": "Commencez à écrire !",
+    "settings": {
+      "title": "Paramètres",
+      "description": "Configurez cet éditeur avec ces paramètres",
+
+      "accessibility": {
+        "title": "Accessibilité",
+        "interface_language": {
+          "title": "Langue de l'interface"
+        }
+      },
+
+      "appearance": {
+        "title": "Apparence",
+        "themes": {
+          "dark": "sombre",
+          "light": "clair",
+          "system": "système",
+          "custom": "personalisé"
+        }
+      }
+    }
+  }
+}

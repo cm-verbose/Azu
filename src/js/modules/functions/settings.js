@@ -28,6 +28,6 @@ export default class Settings {
             this.currentThemeContainer.textContent = e.matches ? "dark" : "light";
         };
         this.currentThemeContainer.innerText = colorScheme.matches ? "dark" : "light";
-        colorScheme.addEventListener("change", () => detectThemeChange);
+        colorScheme.addEventListener("change", (e) => detectThemeChange(e));
     }
 }

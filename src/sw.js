@@ -40,15 +40,15 @@ class ServiceWorker {
         })()
       );
 
-      self.skipWaiting(); 
+      self.skipWaiting();
     });
   }
 
   /** @description Activates client */
   handleActivate() {
     self.addEventListener("activate", (e) => {
-      console.log("[Service Worker] reclaiming control"); 
-      e.waitUntil(clients.claim()); 
+      console.log("[Service Worker] reclaiming control");
+      e.waitUntil(clients.claim());
     });
   }
 

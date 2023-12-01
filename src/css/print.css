@@ -3,6 +3,7 @@
   margin: 0;
 }
 
-.ToolBar, .Footer {
+.ToolBar,
+.Footer {
   display: none;
 }

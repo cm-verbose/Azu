@@ -35,10 +35,7 @@
   <noscript>
     <div id="error-container" lang="en">
       <h1>JavaScript has been disabled</h1>
-      <p>
-        Please enable <a href="https://en.wikipedia.org/wiki/JavaScript">JavaScript</a> to
-        continue.
-      </p>
+      <p>Please enable <a href="https://en.wikipedia.org/wiki/JavaScript">JavaScript</a> to continue.</p>
     </div>
   </noscript>
   <div id="app">
@@ -61,23 +58,39 @@
           <button id="format-strike"><del>S</del></button>
         </div>
         <div id="text-format-inferior-superior" class="button-joiner">
-          <button id="format-sup">x<sub>y</sub></button>
-          <button id="format-sub">x<sup>y</sup></button>
+          <button id="format-sub">x<sub>y</sub></button>
+          <button id="format-sup">x<sup>y</sup></button>
         </div>
         <div id="text-format-font">
           <input type="text" placeholder="Font family" id="format-font-family" value="Work Sans" />
-          <input type="text" placeholder="20" id="format-font-size" maxlength="3" value="20" />
+          <input type="text" placeholder="20" id="format-font-size" maxlength="3" value="20" inputmode="numeric" />
+        </div>
+        <div id="text-format-justification" class="button-joiner">
+          <button id="format-justify-left">
+            <img src="./svg/format_align_left.svg" alt="justify text to left" />
+          </button>
+          <button id="format-justify-center">
+            <img src="./svg/format_align_center.svg" alt="center text" />
+          </button>
+          <button id="format-justify-right">
+            <img src="./svg/format_align_right.svg" alt="justify text to right" />
+          </button>
+          <button id="format-justify-even">
+            <img src="./svg/format_align_justify.svg" alt="justify text evenly" />
+          </button>
         </div>
       </div>
     </header>
     <div class="Main">
       <div lang="zh-hans" id="editor" contenteditable="true" spellcheck="false" role="textbox" aria-label="editor">
-        <div id="initial-content" data-placeholder="Start typing !"></div>
+        <div id="initial-content" data-placeholder="Start writing !"></div>
       </div>
     </div>
     <footer class="Footer">
       <div id="statistics">
-        <div><span id="word-count">no words</span></div>
+        <div>
+          <span id="word-count">no words</span>
+        </div>
       </div>
       <div id="footer-options">
         <div id="manage-zoom-cont">
@@ -85,29 +98,29 @@
             defaultValue="1" />
           <span>
             <input type="text" placeholder="100" maxlength="4" aria-label="zoom-percent-input" id="zoom-control-input"
-              defaultValue="100" value="100" />
-            <span>%</span>
+              defaultValue="100" value="100" inputmode="numeric" />
+            <span id="zoom-percent-sign">%</span>
           </span>
         </div>
       </div>
     </footer>
   </div>
-  <div id="settings-view" style="display: none;">
+  <div id="settings-view" style="display: none">
     <header>
       <hgroup>
         <button id="close-settings">
-          <img src="./svg/close.svg" alt="close settings button">
+          <img src="./svg/close.svg" alt="close settings button" />
         </button>
       </hgroup>
     </header>
     <h1>Settings</h1>
     <p>Configure the editor through these settings.</p>
-    <hr>
+    <hr />
     <section>
-      <h2>Appearance</h2>
+      <h2>Accessibility</h2>
       <section>
         <h3>Interface Language</h3>
-        <select id="language-options" >
+        <select id="language-options">
           <option lang="en">English</option>
           <option lang="fr">Français</option>
           <option lang="ja">日本語</option>
@@ -115,17 +128,24 @@
           <option lang="zh-hant">中文（繁體漢字）</option>
         </select>
       </section>
+    </section>
+    <section>
+      <h2>Appearance</h2>
       <section>
         <h3>Themes</h3>
         <div id="settings-apprearance-themes">
           <div id="light"><span>Light</span></div>
           <div id="dark"><span>Dark</span></div>
-          <div id="system"><span>System (<span id="current-system-scheme"></span></span>)</div>
+          <div id="system">
+            <span>System (<span id="current-system-scheme"></span></span>)
+          </div>
           <div id="custom"><span>Custom</span></div>
         </div>
       </section>
     </section>
   </div>
+  <div id="context-menu" style="display: none;"></div>
+  <div id="main-cover" style="display: none;"></div>
   <script src="./js/script.js" type="module"></script>
 </body>
 </html>

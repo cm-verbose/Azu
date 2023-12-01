@@ -4,6 +4,9 @@ import Storage from "./functions/storage.js";
 import Statictics from "./functions/statistics.js";
 import UserInterface from "./functions/interface.js";
 import TextCorrection from "./functions/text_correction.js";
+import DocumentStyles from "./functions/document_styles.js";
+import Translations from "./functions/translations.js";
+import ContextMenu from "./functions/context_menu.js";
 
 /**
  *
@@ -25,9 +28,12 @@ export default class Editor {
 
   /** @description Configures editor functions */
   private setEvents() {
+    new ContextMenu;
+    new DocumentStyles();
     new EditorFunctions();
-    new Settings(); 
+    new Settings();
     new Statictics();
     new TextCorrection();
+    new Translations(); 
   }
 }

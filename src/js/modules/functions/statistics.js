@@ -1,7 +1,7 @@
 /**
  *
- * @description initialises events relative to word count, word length, mistakes etc.
- * or document hence, statistics.
+ * @description initialises events relative to word count, word length, mistakes,
+ * or about the document itself ;
  *
  **/
 export default class Statictics {
