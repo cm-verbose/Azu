@@ -51,6 +51,7 @@
   body.dark #setting-button > img {
     filter: none !important;
   }
+
   body.light #close-settings > img,
   body.light #setting-button > img {
     filter: brightness(0);
@@ -514,7 +515,9 @@ SETTINGS
 
 #settings-view hr {
   margin: 32px 0;
+
   --border-color-secondary: #eee;
+
   border-color: var(--border-color-secondary);
 }
 
@@ -591,10 +594,10 @@ Context menu
 
 #main-cover {
   position: fixed;
-  top: 0px;
-  left: 0px; 
+  top: 0;
+  left: 0;
   height: 100%;
-  width: 100%; 
+  width: 100%;
   background-color: transparent;
   z-index: 9998;
 }

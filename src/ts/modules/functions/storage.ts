@@ -30,6 +30,7 @@ export default class Storage {
     window.addEventListener("beforeunload", () => {
       const currentSettings = {
         theme: document.body.getAttribute("class") as string,
+        lang: document.body.getAttribute("lang") as string,
       };
 
       localStorage.setItem("zoomLevel", this.zoomInput.value);
@@ -57,6 +58,10 @@ export default class Storage {
               document.body.setAttribute("class", `${value}`);
             }
             break;
+
+          case "lang": {
+            if (value === null) return;
+          }
         }
       }
     });

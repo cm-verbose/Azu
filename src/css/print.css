@@ -7,3 +7,11 @@
 .Footer {
   display: none;
 }
+
+#editor > #initial-content:empty::before {
+  content: "";
+}
+
+#context-menu {
+  display: none !important;
+}

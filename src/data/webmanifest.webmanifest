@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
   "name": "Azu",
-  "short_name": "Azu",
-  "description": "A rich text editor project",
-  "background_color": "#ffffff",
   "display": "standalone",
-  "display_override": ["fullscreen", "standalone", "browser", "minimal-ui"],
-  "theme_color": "#75E19A",
-  "orientation": "landscape",
   "start_url": "../index.html",
+  "background_color": "#ffffff",
+  "description": "A rich text editor project",
+  "display_override": ["fullscreen", "standalone", "browser", "minimal-ui"],
+  "orientation": "landscape",
+  "theme_color": "#75E19A",
+  "short_name": "Azu",
   "icons": [
     {
       "src": "../icons/icon-48x48.png",

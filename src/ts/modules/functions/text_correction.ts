@@ -7,14 +7,14 @@ import { LanguageOptionString, TextMistake } from "../../types";
  */
 
 export default class TextCorrection {
-  contextMenu: HTMLDivElement; 
+  contextMenu: HTMLDivElement;
   editor: HTMLDivElement;
   currentWordListLang: string;
   wordList: Array<string>;
   readonly CORRECTION_INTERVAL: number;
 
   constructor() {
-    this.contextMenu = document.querySelector("#context-menu") as HTMLDivElement; 
+    this.contextMenu = document.querySelector("#context-menu") as HTMLDivElement;
     this.editor = document.querySelector("#editor") as HTMLDivElement;
     this.currentWordListLang = "";
     this.wordList = [];
@@ -156,13 +156,13 @@ export default class TextCorrection {
     }
   }
 
-  /** @description using some TODO: Algorithm ? Show suggestions from a given word */
+  /** @description Shows suggestions using the Levensthein distance algorithm*/
   private showSuggestions(e: MouseEvent) {
     const span = e.target as HTMLSpanElement;
     const term = span.textContent;
     if (!term || term.length === 0) return;
 
-    let filteredList = []; 
+    let filteredList = [];
 
     if (term.length <= 3) {
       filteredList = this.wordList.filter((x) => x.startsWith(term) && x.length < term.length + 2);
@@ -179,27 +179,27 @@ export default class TextCorrection {
       .reverse()
       .slice(0, 3);
     console.log(suggestions);
-    this.contextMenu.innerHTML = ""; 
-    if(suggestions.length === 0){
-      const message = document.createElement("span"); 
-      message.textContent = `No suggestions for term "${term}"`;
-      this.contextMenu.appendChild(message); 
+    this.contextMenu.innerHTML = "";
+    if (suggestions.length === 0) {
+      const message = document.createElement("span");
+      message.textContent = `[${this.currentWordListLang}] No suggestions for term "${term}"`;
+      this.contextMenu.appendChild(message);
     } else {
-      const message = document.createElement("span"); 
-      message.textContent = `Correct ortograph for term "${term}"`;
-      this.contextMenu.appendChild(message); 
+      const message = document.createElement("span");
+      message.textContent = `[${this.currentWordListLang}] Correct orthograph for term "${term}"`;
+      this.contextMenu.appendChild(message);
 
-      suggestions.forEach(s => {
+      suggestions.forEach((s) => {
         const element = document.createElement("div");
         element.textContent = s.word;
 
-        element.addEventListener("click", () =>{
+        element.addEventListener("click", () => {
           const textNode = document.createTextNode(s.word);
-          span.replaceWith(textNode); 
-          this.contextMenu.style.display = "none"; 
-          this.contextMenu.innerHTML = ""; 
+          span.replaceWith(textNode);
+          this.contextMenu.style.display = "none";
+          this.contextMenu.innerHTML = "";
         });
-        this.contextMenu.append(element); 
+        this.contextMenu.append(element);
       });
     }
   }

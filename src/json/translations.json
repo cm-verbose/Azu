@@ -23,11 +23,47 @@
 
       "appearance": {
         "title": "Appearance",
+        "theme_title": "Themes",
         "themes": {
-          "dark": "light",
-          "light": "dark",
-          "system": "system",
-          "custom": "custom"
+          "dark": "Light",
+          "light": "Dark",
+          "system": "System",
+          "custom": "Custom"
+        }
+      }
+    }
+  },
+
+  "es": {
+    "format_text_button": {
+      "bold": "N",
+      "italic": "C",
+      "underline": "S",
+      "strike": "T",
+      "empty_font_name_placeholder": "Font family"
+    },
+    "document_initial_title": "Documento 1",
+    "document_no_title_placeholder": "Ingresar un título",
+    "document_place_holder": "¡Empieza a escribir!",
+    "settings": {
+      "title": "Ajustes",
+      "description": "Configurá el editor a través de estas configuraciones",
+
+      "accessibility": {
+        "title": "Accesibilidad",
+        "interface_language": {
+          "title": "Idioma del interfaz"
+        }
+      },
+
+      "appearance": {
+        "title": "Apariencia",
+        "theme_title": "Temas",
+        "themes": {
+          "dark": "Oscuro",
+          "light": "Ligero",
+          "system": "Sistema",
+          "custom": "Personalizado"
         }
       }
     }
@@ -50,6 +86,7 @@
 
       "accessibility": {
         "title": "Accessibilité",
+        "theme_title": "Thèmes",
         "interface_language": {
           "title": "Langue de l'interface"
         }
@@ -57,11 +94,117 @@
 
       "appearance": {
         "title": "Apparence",
+        "theme_title": "Thèmes",
         "themes": {
-          "dark": "sombre",
-          "light": "clair",
-          "system": "système",
-          "custom": "personalisé"
+          "dark": "Sombre",
+          "light": "Clair",
+          "system": "Système",
+          "custom": "Personalisé"
+        }
+      }
+    }
+  },
+
+  "ja": {
+    "format_text_button": {
+      "bold": "太",
+      "italic": "斜",
+      "underline": "線",
+      "strike": "刪",
+      "empty_font_name_placeholder": "フォントファミリー"
+    },
+    "document_initial_title": "書類一",
+    "document_no_title_placeholder": "入力ドキュメントタイトル",
+    "document_place_holder": "書き始める",
+    "settings": {
+      "title": "設定",
+      "description": "これらの設定を通じてエディターを構成します",
+
+      "accessibility": {
+        "title": "アクセシビリティ",
+        "interface_language": {
+          "title": "インターフェース言語"
+        }
+      },
+
+      "appearance": {
+        "title": "外観",
+        "theme_title": "テーマ",
+        "themes": {
+          "dark": "暗いテーマ",
+          "light": "ライトテーマ",
+          "system": "システムテーマ",
+          "custom": "カスタムテーマ"
+        }
+      }
+    }
+  },
+
+  "zh-hans": {
+    "format_text_button": {
+      "bold": "粗",
+      "italic": "斜",
+      "underline": "划",
+      "strike": "删",
+      "empty_font_name_placeholder": "字体名"
+    },
+    "document_initial_title": "文件一",
+    "document_no_title_placeholder": "输入标题",
+    "document_place_holder": "开始写作吧！",
+    "settings": {
+      "title": "设置",
+      "description": "使用这些设置配置这文字处理机",
+
+      "accessibility": {
+        "title": "可及性",
+        "interface_language": {
+          "title": "界面语言"
+        }
+      },
+
+      "appearance": {
+        "title": "外貌",
+        "theme_title": "主題",
+        "themes": {
+          "dark": "黑暗主題",
+          "light": "淺色主題",
+          "system": "系统主题",
+          "custom": "个人化主题"
+        }
+      }
+    }
+  },
+
+  "zh-hant": {
+    "format_text_button": {
+      "bold": "粗",
+      "italic": "斜",
+      "underline": "劃",
+      "strike": "刪",
+      "empty_font_name_placeholder": "字體名"
+    },
+    "document_initial_title": "文件一",
+    "document_no_title_placeholder": "輸入標題",
+    "document_place_holder": "開始寫作吧！",
+    "settings": {
+      "title": "設置",
+      "description": "使用這些設置配置這文字處理機",
+
+      "accessibility": {
+        "title": "可及性",
+        "interface_language": {
+          "title": "界面語言"
+        }
+      },
+
+      "appearance": {
+        "title": "外貌",
+        "theme_title": "主題",
+        "themes": {
+          "dark": "黑暗主題",
+          "light": "淺色主題",
+          "system": "系统主题",
+          "custom": "個人化主題"
         }
       }
     }

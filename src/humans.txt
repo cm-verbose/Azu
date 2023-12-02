@@ -7,7 +7,7 @@
 /* SITE */
 
 	Last update: 2023/12/01
-	Language: English
+	Language: English, Français
 	Doctype: HTML5
 	IDE: VSCode
 

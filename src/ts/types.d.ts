@@ -42,7 +42,7 @@ interface TranslationInterface {
     strike: string;
   };
   document_initial_title: string;
-  document_no_title_placeholder: string; 
+  document_no_title_placeholder: string;
   document_place_holder: string;
   settings: {
     title: string;
@@ -55,6 +55,7 @@ interface TranslationInterface {
     };
     appearance: {
       title: string;
+      theme_title: string;
       themes: {
         dark: string;
         light: string;
