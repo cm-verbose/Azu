@@ -26,9 +26,12 @@ type TextFormatOptionString = Lowercase<NonNullable<keyof typeof TextFormatOptio
 
 /** @description Represents short language code annotations */
 enum ShortLanguageAnnotation {
-  "fr",
+  "de",
+  "es", 
   "en",
+  "fr",
   "ja",
+  "pt", 
   "zh-hans",
   "zh-hant",
 }
@@ -66,12 +69,12 @@ interface TranslationInterface {
   };
 }
 
-type TranlsationShape = Record<ShortLanguageAnnotation, TranslationInterface>;
+type TranslationShape = Record<ShortLanguageAnnotation, TranslationInterface>;
 export {
   LanguageOptionString,
   TextMistake,
   TextFormatOptionString,
   TranslationInterface,
-  TranlsationShape,
+  TranslationShape as TranlsationShape,
   ShortLanguageAnnotation,
 };

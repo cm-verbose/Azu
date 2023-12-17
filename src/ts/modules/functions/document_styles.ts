@@ -1,3 +1,4 @@
+
 import { TextFormatOptionString } from "../../types";
 
 /**
@@ -10,6 +11,9 @@ import { TextFormatOptionString } from "../../types";
 export default class DocumentStyles {
   boldButton: HTMLButtonElement;
   editor: HTMLDivElement;
+  fontFamilyInput: HTMLInputElement;
+  fontFamilyJoiner: HTMLDivElement;
+  fontFamilyDropdown: HTMLDivElement;
   italicButton: HTMLButtonElement;
   justifyLeftButton: HTMLButtonElement;
   justifyCenterButton: HTMLButtonElement;
@@ -21,6 +25,9 @@ export default class DocumentStyles {
   underlineButton: HTMLButtonElement;
 
   constructor() {
+    this.fontFamilyJoiner = document.querySelector("#text-format-font") as HTMLDivElement;
+    this.fontFamilyInput = document.querySelector("#format-font-family") as HTMLInputElement;
+    this.fontFamilyDropdown = document.querySelector("#font-family-dropdown") as HTMLDivElement;
     this.editor = document.querySelector("#editor") as HTMLDivElement;
     this.boldButton = document.querySelector("#format-bold") as HTMLButtonElement;
     this.italicButton = document.querySelector("#format-italics") as HTMLButtonElement;
@@ -39,6 +46,7 @@ export default class DocumentStyles {
   private instantiateDocumentStyles() {
     this.instantiateTextStyles();
     this.instantiateTextJustification();
+    this.instantiateDropdown();
   }
 
   /** @description Instantiate text styles (bold, italics, font...) */
@@ -100,5 +108,22 @@ export default class DocumentStyles {
         }
       }
     };
+  }
+
+  /** @description Show dropdown indicating the font list under the font select menu */
+  private async instantiateDropdown() {
+    const boundBox = this.fontFamilyJoiner.getBoundingClientRect();
+    this.fontFamilyDropdown.style.width = `${boundBox.width}px`;
+    this.fontFamilyDropdown.style.height = `${boundBox.height}px`;
+    this.fontFamilyDropdown.style.left = `${boundBox.left}px`;
+    this.fontFamilyDropdown.style.top = `${boundBox.top + boundBox.height}px`;
+
+    this.fontFamilyInput.addEventListener("focus", () => {
+      this.fontFamilyDropdown.style.display = "block";
+    });
+
+    this.fontFamilyInput.addEventListener("blur", () => {
+      this.fontFamilyDropdown.style.display = "none";
+    });
   }
 }

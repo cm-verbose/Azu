@@ -66,7 +66,10 @@ export default class TextCorrection {
       const textContent = para.textContent;
 
       /* Triming a placeholder \u200B, Zero-width space in order to remove it from tokens */
-      if (textContent === null || textContent.replace(/\u200B/g, "").length === 0) return;
+      if (textContent === null || textContent.replace(/\u200B/g, "").length === 0) {
+        paraIndex += 1;
+        continue;
+      }
       await this.scanText(para as HTMLDivElement, paraIndex).then(() => {
         paraIndex += 1;
       });
@@ -129,6 +132,7 @@ export default class TextCorrection {
     }
   }
 
+  /** FIXME: Revert user cursor position on edit */
   /** @description marks incorrect terms within the DOM, and suggestions along with it */
   private markIncorrectTerm(errorArray: Array<TextMistake>) {
     // \u200C, \uFEFF
@@ -139,6 +143,7 @@ export default class TextCorrection {
       if (!paragraph.textContent) return;
       paragraph.textContent = paragraph.textContent.replace(termRegex, "\uFEFF$1\u200C");
     });
+
     this.editor.innerHTML = this.editor.innerHTML.replace(/\uFEFF(.*?)\u200C/g, "<span data-temp-err>$1</span>");
     const errorNodes: NodeListOf<HTMLDivElement> = document.querySelectorAll("[data-temp-err]");
 
@@ -153,6 +158,7 @@ export default class TextCorrection {
     const errors = document.getElementsByClassName("error");
     for (const error of errors) {
       error.addEventListener("contextmenu", (e) => this.showSuggestions(e as MouseEvent));
+      this.observeErrorChange(error as HTMLSpanElement); 
     }
   }
 
@@ -182,11 +188,11 @@ export default class TextCorrection {
     this.contextMenu.innerHTML = "";
     if (suggestions.length === 0) {
       const message = document.createElement("span");
-      message.textContent = `[${this.currentWordListLang}] No suggestions for term "${term}"`;
+      message.innerHTML = `<b>${this.currentWordListLang}</b> No suggestions for term "${term}"`;
       this.contextMenu.appendChild(message);
     } else {
       const message = document.createElement("span");
-      message.textContent = `[${this.currentWordListLang}] Correct orthograph for term "${term}"`;
+      message.innerHTML = `<b>${this.currentWordListLang}</b> Correct orthograph for term "${term}"`;
       this.contextMenu.appendChild(message);
 
       suggestions.forEach((s) => {
@@ -202,6 +208,30 @@ export default class TextCorrection {
         this.contextMenu.append(element);
       });
     }
+  }
+  
+  /** @description Changes the content of the error element if the updated text is valid */
+  private observeErrorChange(error: HTMLSpanElement){
+    const options:MutationObserverInit = {
+      childList: true, 
+      characterData: true, 
+      characterDataOldValue: true,
+      subtree: true, 
+    }; 
+
+    const observer = new MutationObserver((mutations:MutationRecord[]) => {
+      for(const mutation of mutations){
+        console.log(mutation); 
+        const textContent = mutation.target.textContent; 
+        if(mutation.type !== "characterData" || !textContent) return; 
+        if(this.wordList.includes(textContent)){
+          const text = document.createTextNode(textContent); 
+          error.replaceWith(text); 
+        }
+      }
+    });
+
+    observer.observe(error, options); 
   }
 
   /**

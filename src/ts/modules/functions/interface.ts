@@ -15,6 +15,7 @@ export default class UserInterface {
   zoomInput: HTMLInputElement;
   zoomCurr: number;
   readonly MAX_ALLOWED_ZOOM: number;
+  readonly MAX_TITLE_LENGTH: number;
 
   constructor() {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
@@ -31,6 +32,7 @@ export default class UserInterface {
     */
     this.zoomCurr = parseInt(localStorage.getItem("zoomLevel") as string, 10) / 100;
     this.MAX_ALLOWED_ZOOM = parseInt(this.zoomRangeInput.max);
+    this.MAX_TITLE_LENGTH = 50;
     this.instantiateUIEvents();
   }
 
@@ -152,9 +154,8 @@ export default class UserInterface {
     if (title.replace(/\s*/g, "") === "") {
       document.title = "Azu - Unnamed";
     } else {
-      const MAX_TITLE_LENGTH = 50;
       const ellidedString: string =
-        title.length >= MAX_TITLE_LENGTH ? `${title.substring(0, MAX_TITLE_LENGTH - 3)}...` : title;
+        title.length >= this.MAX_TITLE_LENGTH ? `${title.substring(0, this.MAX_TITLE_LENGTH - 3)}...` : title;
       document.title = `Azu - ${ellidedString}`;
     }
   }

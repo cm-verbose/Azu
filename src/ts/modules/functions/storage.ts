@@ -61,6 +61,7 @@ export default class Storage {
 
           case "lang": {
             if (value === null) return;
+            document.body.setAttribute("lang", `${value}`); 
           }
         }
       }

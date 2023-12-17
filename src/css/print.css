@@ -12,6 +12,16 @@
   content: "";
 }
 
+#editor{
+  scale: 1!important;
+}
+
 #context-menu {
   display: none !important;
+}
+
+.Main{
+  position: sticky;
+  left: 0px;
+  top: 20px;
 }

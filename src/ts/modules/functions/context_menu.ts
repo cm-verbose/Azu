@@ -18,22 +18,24 @@ export default class ContextMenu {
   private instantiateContextMenu() {
     document.addEventListener("contextmenu", (e: MouseEvent) => {
       e.preventDefault();
-      if (document.activeElement) {
-        const activeElement = document.activeElement as HTMLElement;
-        activeElement.blur();
-      }
       this.ctxCover.style.display = "block";
       this.contextMenu.style.display = "block";
-      this.moveMenu(e.clientX, e.clientY);
+      this.moveMenu(e.clientX, e.clientY, e);
     });
 
     this.handleCloseMenu();
   }
 
   /** @description move the menu to a specific position */
-  private moveMenu(x: number, y: number) {
+  private moveMenu(x: number, y: number, event:MouseEvent) {
     this.contextMenu.style.left = `${x}px`;
     this.contextMenu.style.top = `${y}px`;
+    
+    switch (event.target){
+      default: {
+        console.log(event.target); 
+      } break; 
+    }
   }
 
   /** Closes the menu on exit of the cover */

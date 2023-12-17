@@ -1,4 +1,4 @@
-import { ShortLanguageAnnotation, TranlsationShape } from "../../types";
+import { ShortLanguageAnnotation, TranlsationShape, TranslationInterface } from "../../types";
 
 /**
  *
@@ -26,6 +26,7 @@ export default class Translations {
   settingsTitle: HTMLHeadingElement;
   languageSelection: HTMLSelectElement;
 
+  documentNames: Set<string>;
   translations: TranlsationShape;
 
   constructor() {
@@ -47,6 +48,8 @@ export default class Translations {
     this.titleInput = document.querySelector("#title-input") as HTMLInputElement;
     this.initialContentDiv = document.querySelector("#initial-content") as HTMLDivElement;
     this.languageSelection = document.querySelector("#language-options") as HTMLSelectElement;
+
+    this.documentNames = new Set();
     this.translations = {};
     this.instantiateTranslations();
   }
@@ -54,11 +57,24 @@ export default class Translations {
   /** @description instantiates events for translations */
   private instantiateTranslations() {
     (async () => {
-      await this.fetchTranslations().then((json) => {
+      await this.fetchTranslations().then((json): void => {
         this.translations = json;
+        Object.values(json).forEach((translation: unknown) => {
+          const t = translation as TranslationInterface;
+          this.documentNames.add(t.document_initial_title);
+        });
       });
+
+      /** this.translations and this.documentNames might not exist yet */
+      this.instantiateLanguageSelection();
     })();
-    this.instantiateLanguageSelection();
+  }
+
+  /** @description fetches the .json file containing all translations */
+  private async fetchTranslations() {
+    const response = await fetch("./json/translations.json");
+    const translations = await response.json();
+    return translations;
   }
 
   /** @description sets the interface language, to the specified value */
@@ -66,8 +82,10 @@ export default class Translations {
     if (Object.keys(this.translations).length === 0 || this.translations[language] === undefined) return;
     const translationobj = this.translations[language];
     this.titleInput.placeholder = translationobj.document_no_title_placeholder;
-    if (this.titleInput.value === "Document 1") {
+
+    if (this.documentNames.has(this.titleInput.value)) {
       this.titleInput.value = translationobj.document_initial_title;
+      document.title = `Azu - ${translationobj.document_initial_title}`;
     }
 
     /* FIXME: This is very ugly but it works ¯\_(ツ)_/¯ */
@@ -88,20 +106,12 @@ export default class Translations {
     this.settingsThemesCustom.textContent = translationobj.settings.appearance.themes.custom;
   }
 
-  /** @description fetches the .json file containing all translations */
-  private async fetchTranslations() {
-    const response = await fetch("./json/translations.json");
-    const translations = await response.json();
-    return translations;
-  }
-
   /** @description Allows for the user to change their language */
   private instantiateLanguageSelection() {
     this.languageSelection.addEventListener("change", () => {
       const selectedLang =
         this.languageSelection.children[this.languageSelection.selectedIndex].getAttribute("lang");
 
-      console.log(selectedLang);
       if (selectedLang === null) return;
       this.editor.setAttribute("lang", "zh-hans");
       switch (selectedLang) {

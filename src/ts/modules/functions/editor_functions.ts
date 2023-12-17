@@ -77,6 +77,8 @@ export default class EditorFunctions {
     const selection = window.getSelection() as Selection;
     const range: Range = selection.getRangeAt(0);
 
+    console.log(clipboardData); 
+
     const textContentNode = document.createTextNode(clipboardData);
     range.insertNode(textContentNode);
     range.setStartAfter(textContentNode);

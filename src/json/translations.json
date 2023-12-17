@@ -1,4 +1,39 @@
 {
+  "de": {
+    "format_text_button": {
+      "bold": "F",
+      "italic": "K",
+      "underline": "U",
+      "strike": "G"
+    },
+    "empty_font_name_placeholder": "Schriftfamilie",
+    "document_initial_title": "Dokument 1",
+    "document_no_title_placeholder": "Geben Sie einen Titel ein",
+    "document_place_holder": "Fangen Sie an zu schreiben!",
+    "settings": {
+      "title": "Einstellungenen",
+      "description": "Konfigurieren Sie den Editor über diese Einstellungen.",
+
+      "accessibility": {
+        "title": "Zugänglichkeit",
+        "interface_language": {
+          "title": "Schnittstellensprache"
+        }
+      },
+
+      "appearance": {
+        "title": "Aussehen",
+        "theme_title": "Thema",
+        "themes": {
+          "dark": "Dunkles",
+          "light": "Licht",
+          "system": "System",
+          "custom": "Benutzerdefiniertes"
+        }
+      }
+    }
+  },
+
   "en": {
     "format_text_button": {
       "bold": "B",
@@ -25,8 +60,8 @@
         "title": "Appearance",
         "theme_title": "Themes",
         "themes": {
-          "dark": "Light",
-          "light": "Dark",
+          "dark": "Dark",
+          "light": "Light",
           "system": "System",
           "custom": "Custom"
         }
@@ -105,6 +140,41 @@
     }
   },
 
+  "pt": {
+    "format_text_button": {
+      "bold": "N",
+      "italic": "I",
+      "underline": "S",
+      "strike": "R",
+      "empty_font_name_placeholder": "Família de fontes"
+    },
+    "document_initial_title": "Documento 1",
+    "document_no_title_placeholder": "Insira um título de documento",
+    "document_place_holder": "Comece a escrever!",
+    "settings": {
+      "title": "Configurações",
+      "description": "Configure o editor por meio destas configurações",
+
+      "accessibility": {
+        "title": "Acessibilidade",
+        "interface_language": {
+          "title": "Interface de linguagem"
+        }
+      },
+
+      "appearance": {
+        "title": "Aparência",
+        "theme_title": "Temas",
+        "themes": {
+          "dark": "Escuro",
+          "light": "Claro",
+          "system": "Sistema",
+          "custom": "Personalizado"
+        }
+      }
+    }
+  },
+
   "ja": {
     "format_text_button": {
       "bold": "太",
@@ -113,7 +183,7 @@
       "strike": "刪",
       "empty_font_name_placeholder": "フォントファミリー"
     },
-    "document_initial_title": "書類一",
+    "document_initial_title": "書類 1",
     "document_no_title_placeholder": "入力ドキュメントタイトル",
     "document_place_holder": "書き始める",
     "settings": {
@@ -148,7 +218,7 @@
       "strike": "删",
       "empty_font_name_placeholder": "字体名"
     },
-    "document_initial_title": "文件一",
+    "document_initial_title": "文件 1",
     "document_no_title_placeholder": "输入标题",
     "document_place_holder": "开始写作吧！",
     "settings": {
@@ -183,7 +253,7 @@
       "strike": "刪",
       "empty_font_name_placeholder": "字體名"
     },
-    "document_initial_title": "文件一",
+    "document_initial_title": "文件 1",
     "document_no_title_placeholder": "輸入標題",
     "document_place_holder": "開始寫作吧！",
     "settings": {

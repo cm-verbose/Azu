@@ -1,7 +1,11 @@
 class ServiceWorker {
   constructor() {
-    this.cacheName = "v1";
-    this.cachedAsssets = [
+    this.instantiateServiceWorker();
+  }
+
+  /** @description instantiates service worker */
+  instantiateServiceWorker() {
+    this.ressourcesToCache = [
       "./index.html",
       "./css/print.css",
       "./css/style.css",
@@ -9,69 +13,40 @@ class ServiceWorker {
       "./font/Work_Sans_VF.ttf",
       "./icons/icon-144x144.png",
       "./js/script.js",
-      "./js/modules/editor.js",
-      "./js/modules/functions/editor_functions.js",
-      "./js/modules/functions/text_correction.js",
-      "./js/modules/functions/interface.js",
-      "./js/modules/functions/storage.js",
-      "./js/modules/functions/settings.js",
-      "./js/modules/functions/statistics.js",
       "./json/french.json",
+      "./json/translations.json",
+      "./svg/close.svg",
+      "./svg/format_align_center.svg",
+      "./svg/format_align_justify.svg",
+      "./svg/format_align_left.svg",
+      "./svg/format_align_right.svg",
+      "./svg/settings.svg",
     ];
-    this.initializeWorker();
+    this.handleStateInstall();
+    this.handleStateFetch();
   }
 
-  /** @description Instantiates service worker events */
-  initializeWorker() {
-    this.handleInstall();
-    this.handleActivate();
-    this.handleFetch();
-  }
-
-  /** @description Handles service worker installation */
-  handleInstall() {
-    console.log("[Service Worker] Installing...");
+  /** @description Handles the installation phase of the service worker */
+  handleStateInstall() {
     self.addEventListener("install", (e) => {
       e.waitUntil(
-        (async () => {
-          const cache = await caches.open(this.cacheName);
-          console.log("[Service Worker] Caching all content");
-          await cache.addAll(this.cachedAsssets);
-        })()
+        caches.open("assets").then((cache) => {
+          console.log(cache);
+          return cache.addAll(this.ressourcesToCache);
+        })
       );
-
-      self.skipWaiting();
     });
   }
 
-  /** @description Activates client */
-  handleActivate() {
-    self.addEventListener("activate", (e) => {
-      console.log("[Service Worker] reclaiming control");
-      e.waitUntil(clients.claim());
-    });
-  }
-
-  /** @description Handles service worker fetch event */
-  handleFetch() {
+  /** @description Handles the fetching phase of the service worker */
+  handleStateFetch() {
     self.addEventListener("fetch", (e) => {
-      console.log(e);
-      if (!(e.request.url.startsWith("http:") || e.request.url.startsWith("https:"))) {
-        return;
-      }
       e.respondWith(
-        (async () => {
-          const r = await caches.match(e.request);
-          console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
-
-          if (r) return r;
-          const response = await fetch(e.request);
-          const cache = await caches.open(this.cacheName);
-          console.log("[Service Worker] Caching new ressource");
-          cache.put(e.request, response.clone());
-          return response;
-        })()
-      );
+        caches.match(e.request).then(req => {
+          if(req) return req; 
+          return fetch(e.request); 
+        })
+      )
     });
   }
 }

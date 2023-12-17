@@ -14,7 +14,7 @@ class Main {
   /** @description instantiates a Service worker */
   private async instantiateServiceWorker() {
     if (!("serviceWorker" in navigator)) {
-      console.error("[Service worker] : Unavailable");
+      console.error("[Service worker] : Unavailable, please upgrade your browser");
       return;
     }
     await navigator.serviceWorker.register("./sw.js", {
