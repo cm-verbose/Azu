@@ -1,11 +1,11 @@
+import { TextFormatOptionString } from "../../types";
+
 /**
  *
  * @description Configures events relative to the functions of the text editing
  * within the editor
  *
  **/
-
-import { TextFormatOptionString } from "../../types";
 
 export default class EditorFunctions {
   editor: HTMLDivElement;
@@ -69,43 +69,56 @@ export default class EditorFunctions {
     }
   }
 
-  /** @description Handles the paste event, to only keep text */
+  /** @description Handles the paste event */
   private handlePaste(e: ClipboardEvent) {
-    e.preventDefault();
-    const clipboardData: string | null = e.clipboardData ? e.clipboardData.getData("text") : null;
-    if (!clipboardData) return;
-    const selection = window.getSelection() as Selection;
-    const range: Range = selection.getRangeAt(0);
+    if (!e.clipboardData) return;
+    const data = e.clipboardData;
+    if (data.types.length === 0) return;
 
-    console.log(clipboardData); 
+    const html = data.getData("text/html");
+    const template = document.createElement("template");
+    template.innerHTML = html;
 
-    const textContentNode = document.createTextNode(clipboardData);
-    range.insertNode(textContentNode);
-    range.setStartAfter(textContentNode);
-    range.setEndAfter(textContentNode);
+    if (!template.content) return;
+    const fragment = template.content as DocumentFragment;
+    const elements: Array<Node> = [];
 
+    for (const node of fragment.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE) {
+        elements.push(node);
+      }
+    }
+
+    const selection = document.getSelection();
+    if (!selection) return;
+    const toBeAppendedFragment = document.createDocumentFragment();
+    toBeAppendedFragment.append(...elements);
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(toBeAppendedFragment);
+
+    // FIXME: This doesn't quite work + images
+    range.setStartAfter(toBeAppendedFragment);
+    range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
   }
 
   /** @description Prevents the initial div from being deleted */
   restrictInitialDiv(e: KeyboardEvent) {
-    if (e.key === "Backspace") {
-      if (this.initialDiv.innerText.replace(/\n|\s/g, "") === "") {
-        const selection = window.getSelection();
-        if (!selection) return;
-        let parentNode = selection.anchorNode;
+    if (e.key !== "Backspace") return;
+    if (this.initialDiv.innerText.replace(/\n|\s/g, "") === "") {
+      const selection = window.getSelection();
+      if (!selection) return;
+      let parentNode = selection.anchorNode;
 
-        /** recursively traverse */
-        if (parentNode && parentNode.parentElement !== this.editor) {
-          while (parentNode !== null && parentNode.parentElement !== this.editor) {
-            parentNode = parentNode?.parentElement;
-          }
-        }
-        if (parentNode === this.initialDiv) {
-          e.preventDefault();
-        }
+      /** recursively traverse elements until encountering the editor as a parent node */
+      if (!(parentNode && parentNode.parentElement !== this.editor)) return;
+      while (parentNode !== null && parentNode.parentElement !== this.editor) {
+        parentNode = parentNode?.parentElement;
       }
+      if (parentNode !== this.initialDiv) return;
+      e.preventDefault();
     }
   }
 
@@ -115,7 +128,7 @@ export default class EditorFunctions {
     inputElement.select();
   }
 
-  /** @description Enforces digit only input */
+  /** @description Enforces digit only input or backspace for deletion */
   private enforeDigitOnly(e: KeyboardEvent) {
     if (!/Backspace|\d/g.test(e.key)) e.preventDefault();
   }

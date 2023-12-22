@@ -1,4 +1,3 @@
-
 import { TextFormatOptionString } from "../../types";
 
 /**
@@ -55,7 +54,10 @@ export default class DocumentStyles {
      * FIXME: THIS IS DEPECRECATED AND COULD STOP WORKING AT ANY MOMENT
      * TODO: THIS IS FEATURE DIFFERS FROM BROWSERS TO BROWSERS
      * */
-    this.boldButton.addEventListener("click", () => document.execCommand("bold", false));
+
+    this.boldButton.addEventListener("click", () => {
+      this.wrapElement(document.createElement("strong"));
+    });
     this.italicButton.addEventListener("click", () => document.execCommand("italic", false));
     this.underlineButton.addEventListener("click", () => document.execCommand("underline", false));
     this.strikeButtonButton.addEventListener("click", () => document.execCommand("strikeThrough", false));
@@ -65,16 +67,17 @@ export default class DocumentStyles {
 
   /** @description Sets events for text justification by the click of a button */
   private instantiateTextJustification() {
-    this.justifyCenterButton.addEventListener("click", this.handleJustification("center"));
-    this.justifyLeftButton.addEventListener("click", this.handleJustification("left"));
-    this.justifyRightButton.addEventListener("click", this.handleJustification("right"));
-    this.justifyEvenButton.addEventListener("click", this.handleJustification("justify"));
+    this.justifyCenterButton.addEventListener("click", this.justify("center"));
+    this.justifyLeftButton.addEventListener("click", this.justify("left"));
+    this.justifyRightButton.addEventListener("click", this.justify("right"));
+    this.justifyEvenButton.addEventListener("click", this.justify("justify"));
   }
 
   /** @description Handles text justification events */
-  private handleJustification(position: TextFormatOptionString): () => void {
+  private justify(position: TextFormatOptionString): () => void {
     return () => {
-      const selection = window.getSelection() as Selection;
+      const selection = window.getSelection();
+      if (!selection) return;
       let parentNode = selection.focusNode;
 
       /* recursively traverse parents to find the ones that are paragraph leveled */
@@ -84,7 +87,7 @@ export default class DocumentStyles {
         }
       }
       if (parentNode === null) return;
-      const paragraphNode: HTMLDivElement = parentNode as HTMLDivElement;
+      const paragraphNode = parentNode as HTMLDivElement;
 
       if (selection.anchorNode === selection.focusNode) {
         paragraphNode.setAttribute("data-text-align", position);
@@ -110,20 +113,56 @@ export default class DocumentStyles {
     };
   }
 
+  /**
+   * @description a function used to replace the document.execCommand() element creation
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand | document.execCommand(); }
+   */
+  private wrapElement<T extends HTMLElement>(element: T) {
+    // TODO: FIXME: 
+    const selection = document.getSelection();
+    if (!selection) return;
+    const range = selection.getRangeAt(0);
+
+    const childNodes = range.cloneContents().childNodes;
+    const elements = [];
+    for (const child of childNodes) {
+      elements.push(child);
+    }
+    range.deleteContents();
+
+    if(elements.length === 0) return; 
+    if(elements.length === 1){
+      console.log(element, elements); 
+      if(elements[0].parentElement && element.nodeType === elements[0].parentElement.nodeType){
+        console.log(elements[0].childNodes); 
+      } else{
+        element.appendChild(elements[0]); 
+        range.insertNode(element); 
+        range.collapse(true);
+        range.setStartAfter(element);
+        selection.removeAllRanges(); 
+        selection.addRange(range); 
+      }
+    }
+    console.log(elements, element); 
+  }
+
   /** @description Show dropdown indicating the font list under the font select menu */
   private async instantiateDropdown() {
     const boundBox = this.fontFamilyJoiner.getBoundingClientRect();
-    this.fontFamilyDropdown.style.width = `${boundBox.width}px`;
-    this.fontFamilyDropdown.style.height = `${boundBox.height}px`;
-    this.fontFamilyDropdown.style.left = `${boundBox.left}px`;
-    this.fontFamilyDropdown.style.top = `${boundBox.top + boundBox.height}px`;
+    const dropdown = this.fontFamilyDropdown;
+
+    dropdown.style.width = `${boundBox.width}px`;
+    dropdown.style.height = `${boundBox.height}px`;
+    dropdown.style.left = `${boundBox.left}px`;
+    dropdown.style.top = `${boundBox.top + boundBox.height}px`;
 
     this.fontFamilyInput.addEventListener("focus", () => {
-      this.fontFamilyDropdown.style.display = "block";
+      dropdown.style.display = "block";
     });
 
     this.fontFamilyInput.addEventListener("blur", () => {
-      this.fontFamilyDropdown.style.display = "none";
+      dropdown.style.display = "none";
     });
   }
 }

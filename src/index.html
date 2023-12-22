@@ -63,7 +63,7 @@
         </div>
         <div id="text-format-font">
           <input type="text" placeholder="Font family" id="format-font-family" value="Work Sans" />
-          <div id="font-family-dropdown" style="display: none;">fonts</div>
+          <div id="font-family-dropdown" style="display: none">fonts</div>
           <input type="text" placeholder="20" id="format-font-size" maxlength="3" value="20" inputmode="numeric" />
         </div>
         <div id="text-format-justification" class="button-joiner">
@@ -90,7 +90,7 @@
     <footer class="Footer">
       <div id="statistics">
         <div>
-          <span id="word-count">no words</span>
+          <span id="word-count">No words</span>
         </div>
       </div>
       <div id="footer-options">
@@ -106,6 +106,13 @@
       </div>
     </footer>
   </div>
+  <div id="statitics-view" style="display: none;">
+    <h1>Statistics</h1>
+    <div id="statistics-container">
+
+    </div>
+  </div>
+  <div id="close-statistics" style="display: none;"></div>
   <div id="settings-view" style="display: none">
     <header>
       <hgroup>
@@ -143,12 +150,19 @@
           <div id="system" data-tr-th-sys>
             <span>System (<span id="current-system-scheme"></span></span>)
           </div>
-          <div id="custom" data-tr-th-cus><span>Custom</span></div>
+          <div id="custom" data-tr-th-cus>
+            <form method="post">
+              <input type="file" id="custom-theme-file-input" accept=".css">
+              <label for="custom-theme-file-input" id="custom-theme-file-label">Custom</label>
+            </form>
+          </div>
         </div>
       </section>
     </section>
   </div>
-  <div id="context-menu" style="display: none"></div>
+  <div id="context-menu" style="display: none">
+    <ul id="context-menu-options"></ul>
+  </div>
   <div id="main-cover" style="display: none"></div>
   <script src="./js/script.js" type="module"></script>
 </body>

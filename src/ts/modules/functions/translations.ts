@@ -1,4 +1,4 @@
-import { ShortLanguageAnnotation, TranlsationShape, TranslationInterface } from "../../types";
+import { ShortLanguageAnnotation, TranslationShape, TranslationInterface } from "../../types";
 
 /**
  *
@@ -27,7 +27,7 @@ export default class Translations {
   languageSelection: HTMLSelectElement;
 
   documentNames: Set<string>;
-  translations: TranlsationShape;
+  translations: TranslationShape;
 
   constructor() {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
@@ -73,7 +73,9 @@ export default class Translations {
   /** @description fetches the .json file containing all translations */
   private async fetchTranslations() {
     const response = await fetch("./json/translations.json");
-    const translations = await response.json();
+    const translations = await response.json().catch((e) => {
+      console.error(e);
+    });
     return translations;
   }
 
@@ -102,7 +104,8 @@ export default class Translations {
     this.settingsThemesTitle.textContent = translationobj.settings.appearance.theme_title;
     this.settingsThemesLight.textContent = translationobj.settings.appearance.themes.light;
     this.settingsThemesDark.textContent = translationobj.settings.appearance.themes.dark;
-    this.settingsThemesSystem.textContent = translationobj.settings.appearance.themes.system;
+    ((this.settingsThemesSystem.querySelector("span") as HTMLSpanElement).childNodes[0] as Text) = 
+      translationobj.settings.appearance.themes.system;
     this.settingsThemesCustom.textContent = translationobj.settings.appearance.themes.custom;
   }
 

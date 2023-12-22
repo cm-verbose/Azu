@@ -37,7 +37,7 @@ export default class Storage {
       localStorage.setItem("Settings", JSON.stringify(currentSettings));
     });
 
-    window.addEventListener("load", () => {
+    document.addEventListener("DOMContentLoaded", () => {
       const zoomLevel = localStorage.getItem("zoomLevel");
       if (zoomLevel !== null) {
         this.zoomAmount = parseInt(zoomLevel, 10);
@@ -59,10 +59,12 @@ export default class Storage {
             }
             break;
 
-          case "lang": {
-            if (value === null) return;
-            document.body.setAttribute("lang", `${value}`); 
-          }
+          case "lang":
+            {
+              if (value === null) return;
+              document.body.setAttribute("lang", `${value}`);
+            }
+            break;
         }
       }
     });

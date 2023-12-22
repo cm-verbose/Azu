@@ -6,7 +6,7 @@
 
 /* SITE */
 
-	Last update: 2023/12/02
+	Last update: 2023/12/19
 	Language: English, Français
 	Doctype: HTML5
 	IDE: VSCode

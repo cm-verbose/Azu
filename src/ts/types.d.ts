@@ -1,9 +1,29 @@
+/** @description Represents possible options of a context menu */
+enum ContextMenuOptionType {
+  Copy,
+  Cut,
+  Paste,
+  Refresh,
+  SelectAll,
+}
+
+type ContextMenuOptionTypeString = NonNullable<Capitalize<keyof typeof ContextMenuOptionType>>;
+
+/** @description Represents all fields of a statistics Object, used to display statistics */
+interface StatisticsObjectInterface {
+  readonly wordCount: number, 
+  readonly wordAverageLength: number, 
+  readonly wordLengthDistributionImage: URL | null; 
+}
+
+type StatisticsObjectShape = NonNullable<StatisticsObjectInterface>;
+
 /** @description Represents all available language options for text correction */
 enum LanguageOptions {
   French,
 }
 
-type LanguageOptionString = Lowercase<NonNullable<keyof typeof LanguageOptions>>;
+type LanguageOptionString = NonNullable<Lowercase<keyof typeof LanguageOptions>>;
 
 /** @description Represents an error within the text and additional information */
 interface TextMistakeInterface {
@@ -22,16 +42,16 @@ enum TextFormatOptions {
   Justify,
 }
 
-type TextFormatOptionString = Lowercase<NonNullable<keyof typeof TextFormatOptions>>;
+type TextFormatOptionString = NonNullable<Lowercase<keyof typeof TextFormatOptions>>;
 
 /** @description Represents short language code annotations */
 enum ShortLanguageAnnotation {
   "de",
-  "es", 
+  "es",
   "en",
   "fr",
   "ja",
-  "pt", 
+  "pt",
   "zh-hans",
   "zh-hant",
 }
@@ -69,12 +89,14 @@ interface TranslationInterface {
   };
 }
 
-type TranslationShape = Record<ShortLanguageAnnotation, TranslationInterface>;
+type TranslationShape = NonNullable<Record<ShortLanguageAnnotation, NonNullableTranslationInterface>>;
 export {
+  ContextMenuOptionTypeString,
   LanguageOptionString,
   TextMistake,
   TextFormatOptionString,
   TranslationInterface,
-  TranslationShape as TranlsationShape,
+  TranslationShape,
   ShortLanguageAnnotation,
+  StatisticsObjectInterface,
 };

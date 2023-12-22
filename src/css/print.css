@@ -12,15 +12,15 @@
   content: "";
 }
 
-#editor{
-  scale: 1!important;
+#editor {
+  scale: 1 !important;
 }
 
 #context-menu {
   display: none !important;
 }
 
-.Main{
+.Main {
   position: sticky;
   left: 0px;
   top: 20px;

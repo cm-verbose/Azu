@@ -42,11 +42,11 @@ class ServiceWorker {
   handleStateFetch() {
     self.addEventListener("fetch", (e) => {
       e.respondWith(
-        caches.match(e.request).then(req => {
-          if(req) return req; 
-          return fetch(e.request); 
+        caches.match(e.request).then((req) => {
+          if (req) return req;
+          return fetch(e.request);
         })
-      )
+      );
     });
   }
 }

@@ -7,18 +7,22 @@ import { LanguageOptionString, TextMistake } from "../../types";
  */
 
 export default class TextCorrection {
+  contextMenuOptions: HTMLUListElement;
   contextMenu: HTMLDivElement;
+  contextMenuCover: HTMLDivElement;
   editor: HTMLDivElement;
   currentWordListLang: string;
   wordList: Array<string>;
   readonly CORRECTION_INTERVAL: number;
 
   constructor() {
+    this.contextMenuOptions = document.querySelector("#context-menu-options") as HTMLUListElement;
     this.contextMenu = document.querySelector("#context-menu") as HTMLDivElement;
+    this.contextMenuCover = document.querySelector("#main-cover") as HTMLDivElement;
     this.editor = document.querySelector("#editor") as HTMLDivElement;
     this.currentWordListLang = "";
     this.wordList = [];
-    this.CORRECTION_INTERVAL = 2_000;
+    this.CORRECTION_INTERVAL = 500;
     this.initializeTextCorrection();
   }
 
@@ -78,7 +82,6 @@ export default class TextCorrection {
 
   /** @description Scans text content for errors, then structures errors in an object */
   private async scanText(paragraph: HTMLDivElement, paraIndex: number) {
-    console.log("[scanning...]");
     const textContent = (paragraph.textContent as string)
       .trim()
       .replace(/\u200B/g, "")
@@ -158,11 +161,11 @@ export default class TextCorrection {
     const errors = document.getElementsByClassName("error");
     for (const error of errors) {
       error.addEventListener("contextmenu", (e) => this.showSuggestions(e as MouseEvent));
-      this.observeErrorChange(error as HTMLSpanElement); 
+      this.observeErrorChange(error as HTMLSpanElement);
     }
   }
 
-  /** @description Shows suggestions using the Levensthein distance algorithm*/
+  /** @description Shows suggestions using the Levensthein distance algorithm */
   private showSuggestions(e: MouseEvent) {
     const span = e.target as HTMLSpanElement;
     const term = span.textContent;
@@ -184,54 +187,72 @@ export default class TextCorrection {
       .sort((a, b) => a.edit - b.edit)
       .reverse()
       .slice(0, 3);
-    console.log(suggestions);
-    this.contextMenu.innerHTML = "";
-    if (suggestions.length === 0) {
-      const message = document.createElement("span");
-      message.innerHTML = `<b>${this.currentWordListLang}</b> No suggestions for term "${term}"`;
-      this.contextMenu.appendChild(message);
-    } else {
-      const message = document.createElement("span");
-      message.innerHTML = `<b>${this.currentWordListLang}</b> Correct orthograph for term "${term}"`;
-      this.contextMenu.appendChild(message);
 
-      suggestions.forEach((s) => {
-        const element = document.createElement("div");
-        element.textContent = s.word;
+    /* TODO: Wait for contextMenuOptions's children as they might not exist */
+    setTimeout(() => {
+      const errorMessage = document.createElement("li");
+      const suggestionFragment = document.createDocumentFragment();
+      errorMessage.setAttribute("id", "correction-error-option");
 
-        element.addEventListener("click", () => {
-          const textNode = document.createTextNode(s.word);
-          span.replaceWith(textNode);
-          this.contextMenu.style.display = "none";
-          this.contextMenu.innerHTML = "";
+      const languageDescriptor = document.createElement("h1");
+
+      const capitalizedLang = this.currentWordListLang[0].toLocaleUpperCase() + this.currentWordListLang.slice(1);
+      languageDescriptor.innerHTML = capitalizedLang;
+      suggestionFragment.appendChild(languageDescriptor);
+
+      const suggestionMessage = document.createElement("p");
+      if (suggestions.length === 0) {
+        suggestionMessage.innerHTML = `No suggestions for term "${term}"`;
+        suggestionFragment.appendChild(suggestionMessage);
+      } else {
+        const ism = `The spelling for the term "${term}" seems incorrect, here are some suggestions :`;
+        suggestionMessage.innerHTML = ism;
+        const suggestionsUL = document.createElement("ul");
+        suggestions.forEach((suggestion) => {
+          const suggestionLi = document.createElement("li");
+          suggestionLi.textContent = suggestion.word;
+
+          suggestionLi.addEventListener("click", () => {
+            const textNode = document.createTextNode(suggestion.word);
+            span.replaceWith(textNode);
+            this.contextMenu.style.display = "none";
+            this.contextMenuCover.style.display = "none";
+          });
+          suggestionsUL.appendChild(suggestionLi);
         });
-        this.contextMenu.append(element);
-      });
-    }
-  }
-  
-  /** @description Changes the content of the error element if the updated text is valid */
-  private observeErrorChange(error: HTMLSpanElement){
-    const options:MutationObserverInit = {
-      childList: true, 
-      characterData: true, 
-      characterDataOldValue: true,
-      subtree: true, 
-    }; 
+        suggestionFragment.appendChild(suggestionMessage);
+        suggestionFragment.appendChild(suggestionsUL);
+      }
 
-    const observer = new MutationObserver((mutations:MutationRecord[]) => {
-      for(const mutation of mutations){
-        console.log(mutation); 
-        const textContent = mutation.target.textContent; 
-        if(mutation.type !== "characterData" || !textContent) return; 
-        if(this.wordList.includes(textContent)){
-          const text = document.createTextNode(textContent); 
-          error.replaceWith(text); 
+      errorMessage.appendChild(suggestionFragment);
+      const firstChild = this.contextMenuOptions.firstElementChild as HTMLLIElement;
+      const errorJoiner = document.createDocumentFragment();
+      errorJoiner.append(errorMessage, document.createElement("hr")); 
+      this.contextMenuOptions.insertBefore(errorJoiner, firstChild);
+    });
+  }
+
+  /** @description Changes the content of the error element if the updated text is valid */
+  private observeErrorChange(error: HTMLSpanElement) {
+    const options: MutationObserverInit = {
+      childList: true,
+      characterData: true,
+      characterDataOldValue: true,
+      subtree: true,
+    };
+
+    const observer = new MutationObserver((mutations: MutationRecord[]) => {
+      for (const mutation of mutations) {
+        const textContent = mutation.target.textContent;
+        if (mutation.type !== "characterData" || !textContent) return;
+        if (this.wordList.includes(textContent)) {
+          const text = document.createTextNode(textContent);
+          error.replaceWith(text);
         }
       }
     });
 
-    observer.observe(error, options); 
+    observer.observe(error, options);
   }
 
   /**

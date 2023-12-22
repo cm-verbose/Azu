@@ -4,7 +4,7 @@
   "display": "standalone",
   "start_url": "../index.html",
   "background_color": "#ffffff",
-  "description": "A rich text editor project",
+  "description": "A rich text editor",
   "display_override": ["fullscreen", "standalone", "browser", "minimal-ui"],
   "orientation": "landscape",
   "theme_color": "#75E19A",
