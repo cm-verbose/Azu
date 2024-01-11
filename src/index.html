@@ -80,6 +80,22 @@
             <img src="./svg/format_align_justify.svg" alt="justify text evenly" />
           </button>
         </div>
+        <div class="button-joiner">
+          <button id="format-upload-button">
+            <img src="./svg/op_upload_image.svg" alt="upload image to text" />
+          </button>
+          <button id="format-insert-table">
+            <img src="./svg/op_insert_table.svg" alt="insert table to text" />
+          </button>
+        </div>
+        <div class="button-joiner">
+          <button id="import-button">
+            <img src="./svg/op_import.svg" alt="import document" />
+          </button>
+          <button id="export-button">
+            <img src="./svg/op_export.svg" alt="export document" />
+          </button>
+        </div>
       </div>
     </header>
     <div class="Main">
@@ -99,7 +115,7 @@
             defaultValue="1" />
           <span>
             <input type="text" placeholder="100" maxlength="4" aria-label="zoom-percent-input" id="zoom-control-input"
-              defaultValue="100" value="100" inputmode="numeric" />
+              defaultValue="100" value="100" inputmode="numeric" autocomplete="off" spellcheck="false" />
             <span id="zoom-percent-sign">%</span>
           </span>
         </div>
@@ -108,55 +124,67 @@
   </div>
   <div id="statitics-view" style="display: none;">
     <h1>Statistics</h1>
-    <div id="statistics-container">
-
+    <div id="statistics-container"></div>
+  </div>
+  <div id="close-statistics" style="display: none"></div>
+  <div id="import-document-view" style="display: none;">
+    <h1>Import document</h1>
+    <div id="import-drag-zone">
+      <span>Drag or click to import</span>
     </div>
   </div>
-  <div id="close-statistics" style="display: none;"></div>
+  <div id="export-document-view" style="display: none;">
+    <h1>Export document</h1>
+  </div>
+  <div id="close-import-export-view" style="display: none;"></div>
   <div id="settings-view" style="display: none">
     <header>
-      <hgroup>
-        <button id="close-settings">
-          <img src="./svg/close.svg" alt="close settings button" />
-        </button>
-      </hgroup>
+      <button id="close-settings-button">
+        <img src="./svg/close.svg" alt="close settings icon">
+      </button>
     </header>
-    <h1 data-tr-settings>Settings</h1>
-    <p data-tr-description>Configure the editor through these settings.</p>
-    <hr />
-    <section>
-      <h2 data-tr-acc>Accessibility</h2>
+    <nav>
+      <ul>
+        <li><a href="#accessibility" target="_self">Accessibility</a></li>
+        <li><a href="#appearance" target="_self">Appearance</a></li>
+      </ul>
+    </nav>
+    <section id="settings">
       <section>
-        <h3 data-tr-intl>Interface Language</h3>
-        <select id="language-options">
-          <option lang="de">Deutsch</option>
-          <option lang="en" selected="selected">English</option>
-          <option lang="es">Español</option>
-          <option lang="fr">Français</option>
-          <option lang="pt">Português</option>
-          <option lang="ja">日本語</option>
-          <option lang="zh-hans">简体中文</option>
-          <option lang="zh-hant">繁體中文</option>
-        </select>
+        <h1>Settings</h1>
+        <hr>
       </section>
-    </section>
-    <section>
-      <h2 data-tr-appearance>Appearance</h2>
       <section>
-        <h3 data-tr-themes>Themes</h3>
-        <div id="settings-apprearance-themes">
-          <div id="light" data-tr-th-light><span>Light</span></div>
-          <div id="dark" data-tr-th-dark><span>Dark</span></div>
-          <div id="system" data-tr-th-sys>
-            <span>System (<span id="current-system-scheme"></span></span>)
-          </div>
-          <div id="custom" data-tr-th-cus>
-            <form method="post">
-              <input type="file" id="custom-theme-file-input" accept=".css">
-              <label for="custom-theme-file-input" id="custom-theme-file-label">Custom</label>
-            </form>
-          </div>
-        </div>
+        <h2 id="accessibility">Accessibility</h2>
+        <section>
+          <h3>Interface language</h3>
+          <p>Set the language the interface is displayed in.</p>
+          <select id="language-option-select">
+            <option lang="de">Deutsch</option>
+            <option lang="en" selected="selected">English</option>
+            <option lang="es">Español</option>
+            <option lang="fr">Français</option>
+            <option lang="pt">Português</option>
+            <option lang="ja">日本語</option>
+            <option lang="zh-hans">简体中文</option>
+            <option lang="zh-hant">繁體中文</option>
+          </select>
+        </section>
+        <hr>
+      </section>
+      <section>
+        <h2 id="appearance">Appearance</h2>
+        <section>
+          <h3>Themes</h3>
+          <p>Change the appearance of the editor, by selecting a theme or by uploading your own as a <code>.css</code>
+            file.</p>
+          <ul id="theme-option-select-ul">
+            <li id="light-theme-option" class="active-theme">Light theme</li>
+            <li id="dark-theme-option">Dark theme</li>
+            <li id="system-theme-option">System theme</li>
+            <li id="custom-theme-option">Custom themes</li>
+          </ul>
+        </section>
       </section>
     </section>
   </div>

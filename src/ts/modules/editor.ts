@@ -7,6 +7,7 @@ import TextCorrection from "./functions/text_correction";
 import DocumentStyles from "./functions/document_styles";
 import Translations from "./functions/translations";
 import ContextMenu from "./functions/context_menu";
+import ImportExport from "./functions/import_export";
 
 /**
  *
@@ -31,6 +32,7 @@ export default class Editor {
     new ContextMenu();
     new DocumentStyles();
     new EditorFunctions();
+    new ImportExport(); 
     new Settings();
     new Statictics();
     new TextCorrection();

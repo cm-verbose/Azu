@@ -31,6 +31,7 @@ export default class EditorFunctions {
   /** @description Clears the editor when empty (remaining <div>, <br> elements) */
   private handleEmptyEditor() {
     if (this.editor.innerText.replace(/\s+/g, "").length !== 0) return;
+    if ( !(this.editor.childNodes.length === 1 && this.editor.childNodes[0].nodeType === Node.TEXT_NODE) ) return; 
     this.initialDiv.innerHTML = "";
   }
 

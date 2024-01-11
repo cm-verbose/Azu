@@ -42,7 +42,9 @@ export default class ContextMenu {
       document.removeEventListener("keydown", escMenuClose);
     };
     document.addEventListener("keydown", escMenuClose);
-    this.moveMenu(atMousePos.x, atMousePos.y);
+    setTimeout(() => {
+      this.moveMenu(atMousePos.x, atMousePos.y);
+    }); 
   }
 
   /** @description move the menu to a specific position */
@@ -89,7 +91,12 @@ export default class ContextMenu {
           const selection = document.getSelection();
           const activeElement = document.activeElement;
 
-          if (!activeElement || selection === null) return;
+          if (
+            !activeElement ||
+            selection === null ||
+            (activeElement !== this.editor && activeElement.tagName !== "INPUT")
+          )
+            return;
           if (selection.toString().replace(/\s+/g, "").length === 0) return;
           const element = this.createContextMenuOption(option, activeElement as HTMLElement);
           this.contextMenuOptions.appendChild(element);

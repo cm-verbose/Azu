@@ -64,10 +64,22 @@
   body.light .button-joiner > button[id^="format-justify"] {
     filter: brightness(0);
   }
+
+  body.light #close-settings-button > img {
+    filter: brightness(0);
+  }
+
+  body.light #format-upload-button > img {
+    filter: brightness(0);
+  }
 }
 
 *::selection {
   background-color: var(--text-color-selected);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -76,13 +88,14 @@ body {
   font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
   font-size: 20px;
   overflow-x: hidden;
-  overflow-y: hidden;
+  /*overflow-y: hidden;*/
   position: absolute;
   margin: 0;
   width: 100%;
   height: 100%;
   transition-duration: var(--light-dark-transition-duration);
   transition-property: color, background-color;
+  scroll-behavior: smooth;
 }
 
 body::-webkit-scrollbar {
@@ -354,6 +367,10 @@ noscript a:visited {
   text-align: justify;
 }
 
+#editor img {
+  display: block;
+}
+
 .Footer {
   position: fixed;
   display: grid;
@@ -507,65 +524,89 @@ SETTINGS
 */
 
 #settings-view {
-  position: absolute;
+  position: relative;
   left: 50%;
+  top: 5%;
   transform: translate(-50%);
   width: 50vw;
   padding-bottom: 25vh;
 }
 
-#settings-view header {
-  margin-top: 50px;
+#settings-view > header {
+  position: sticky;
+  top: 10%;
+  height: 48px;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
+  margin: 0px;
 }
 
-#settings-view header > hgroup > button {
-  background-color: var(--background-color-primary);
+#settings-view > header > button {
+  background-color: transparent;
   border: none;
   cursor: pointer;
-  position: relative;
-  width: 30px;
-  height: 30px;
-  transition-duration: var(--light-dark-transition-duration);
-  transition-property: background-color;
+  height: 48px;
+  width: 48px;
 }
 
-#settings-view header > hgroup > button > img {
-  position: relative;
-  height: 28px;
-  width: 28px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -webkit-user-drag: none;
+#settings-view > header > button > img {
   user-select: none;
+  -webkit-user-drag: none;
 }
 
-#settings-view hr {
-  margin: 32px 0;
-
-  --border-color-secondary: #eee;
-
-  border-color: var(--border-color-secondary);
+#settings-view > nav {
+  position: sticky;
+  top: calc(10% + 48px + 30px);
+  width: 20%;
+  font-size: 14px;
 }
 
-#settings-view > h1 {
-  font-weight: 400;
-  font-size: 54px;
+#settings-view > nav > ul {
+  list-style: none;
+  padding: 0px;
 }
 
-#settings-view h2 {
+#settings-view > nav > ul > li {
+  margin: 10px 0;
+}
+
+#settings-view > nav > ul > li > a {
+  color: var(--text-color-primary);
+  text-decoration: none;
+}
+
+#settings {
+  position: relative;
+  width: 70%;
+  left: 20%;
+  top: calc(48px);
+}
+
+#settings > section > h1 {
+  font-size: 84px;
+  font-weight: 200;
+  margin: 0px;
+}
+
+#settings > section > hr {
+  margin: 20px 0;
+}
+
+#settings > section > h2 {
+  font-size: 64px;
   font-weight: 300;
-  font-size: 48px;
+  margin: 0px;
+  padding: 20px 0;
 }
 
-#settings-view h3 {
-  font-weight: 300;
+#settings > section h3 {
   font-size: 42px;
+  font-weight: 400;
+  margin: 0px;
+  padding: 20px 0;
 }
 
-select {
+#language-option-select {
   font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
   font-size: 20px;
   user-select: none;
@@ -581,57 +622,33 @@ select {
   transition-property: color, background-color;
 }
 
-select option {
+#language-option-select option {
   font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
   background-color: var(--background-color-primary);
 }
 
-select option:checked {
+#language-option-select option:checked {
   background-color: var(--text-color-selected);
 }
 
-#settings-apprearance-themes {
-  display: grid;
-  grid-template-columns: repeat(2, 50%);
-  gap: 5px;
-  height: 500px;
-}
-
-#settings-apprearance-themes > div {
-  display: flex;
-  border: 1px solid var(--border-color-secondary);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-
-#custom > form {
-  position: relative;
-  background-color: transparent;
-  height: 100%;
-  width: 100%;
-}
-
-#custom > form input[type="file"] {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  color: transparent;
-  margin: 0px;
+#theme-option-select-ul {
+  list-style: none;
   padding: 0px;
 }
 
-#custom > form input[type="file"]::file-selector-button {
-  color: transparent;
-  display: none;
+#theme-option-select-ul > li {
+  border: 1px solid var(--border-color-secondary);
+  user-select: none;
+  padding: 15px;
+  cursor: pointer;
 }
 
-#custom-theme-file-label{
-  position: absolute; 
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+#theme-option-select-ul > li:not(:first-child):not(:last-child) {
+  margin: 20px 0px;
+}
+
+#theme-option-select-ul > li.active-theme {
+  background-color: #cccccc50;
 }
 
 /* 
@@ -653,30 +670,88 @@ Statistics view
   box-sizing: border-box;
 }
 
-#statitics-view h1{
+#statitics-view h1 {
   font-size: 32px;
   font-weight: 300;
   margin: 0px;
 }
 
 #statitics-view ul {
-  list-style-type: none; 
+  list-style-type: none;
   padding: 10px 0;
   margin: 0px;
 }
 
-#statitics-view{
+#statitics-view {
   display: block;
 }
 
-#close-statistics{
+#close-statistics {
   z-index: 8998;
   position: fixed;
-  top: 0; 
+  top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #202020BB;
+  background-color: #202020bb;
+}
+
+/*
+
+Import / export 
+
+*/
+
+#import-document-view,
+#export-document-view {
+  background-color: var(--background-color-primary);
+  position: fixed;
+  z-index: 7000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px inset black;
+  width: 50%;
+  box-sizing: border-box;
+  padding: 25px 20px;
+  z-index: 7999;
+}
+
+:is(#import-document-view, #export-document-view) > h1 {
+  font-weight: 400;
+  margin: 0px;
+  padding: 0px;
+}
+
+:is(#import-button, #export-button) > img{
+  user-select: none;
+  pointer-events: none;
+}
+
+#import-drag-zone {
+  border: inset 1px var(--border-color-secondary);
+  margin: 20px 0px;
+  padding: 60px 30px;
+  position: relative;
+  cursor: pointer;
+}
+
+#import-drag-zone > span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+}
+
+#close-import-export-view {
+  z-index: 7998;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #202020bb;
 }
 
 /*
@@ -806,7 +881,8 @@ body.dark #text-format-inferior-superior > button {
   color: #ddd;
 }
 
-body.dark .button-joiner > button[id^="format-justify"] > img {
+body.dark .button-joiner > button[id^="format-"] > img,
+body.dark button:is(#import-button, #export-button) > img {
   filter: invert(calc((280 / 3)));
 }
 
@@ -849,32 +925,38 @@ body.dark .icon-button {
   background-color: black;
 }
 
-body.dark #settings-view header > hgroup > button {
-  background-color: black;
-}
+/*
+
+Settings
+
+*/
 
 body.dark #settings-view hr {
   border-color: #eee;
+}
+
+body.dark #settings-view > nav > ul > li > a {
+  color: #eee;
 }
 
 body.dark #settings-apprearance-themes > div {
   border: 1px solid #404040;
 }
 
-body.dark select {
+body.dark #language-option-select {
   background-color: black;
   color: #ddd;
   border: 1px solid #aaa;
 }
 
-body.dark select option {
+body.dark #language-option-select option {
   font-family: work-sans, source-han-sans, Arial, Helvetica, sans-serif;
   background-color: black;
 }
 
-body.dark #close-settings > img,
+body.dark #close-settings-button > img,
 body.dark #setting-button > img,
-body.dark #context-menu ul li img {
+body.dark #context-menu ul li img body.dark #format-upload-button > img {
   /* 
     Since the icons is originally filled as black, we can say that invert(1), 
     is white (#FFFFFF). Inversion just takes this as a spectrum of black to 
@@ -883,6 +965,16 @@ body.dark #context-menu ul li img {
   */
   filter: invert(calc((280 / 3)));
 }
+
+body.dark #theme-option-select-ul > li {
+  border-color: #aaa;
+}
+
+/* 
+
+Context menu
+
+*/
 
 body.dark #context-menu {
   background-color: black;
@@ -902,6 +994,6 @@ body.dark #font-family-dropdown {
   box-shadow: inset -0.5px -0.5px #404040, inset 0.5px 0 #404040;
 }
 
-body.dark #statitics-view{
+body.dark #statitics-view {
   background-color: black;
 }

@@ -9,11 +9,19 @@ enum ContextMenuOptionType {
 
 type ContextMenuOptionTypeString = NonNullable<Capitalize<keyof typeof ContextMenuOptionType>>;
 
+/** @description Represent an error object */
+interface ErrorObjectInterface {
+  readonly term: string,
+  readonly index: number, 
+}
+
+type ErrorObjectShape = NonNullable<ErrorObjectInterface>; 
+
 /** @description Represents all fields of a statistics Object, used to display statistics */
 interface StatisticsObjectInterface {
-  readonly wordCount: number, 
-  readonly wordAverageLength: number, 
-  readonly wordLengthDistributionImage: URL | null; 
+  readonly wordCount: NonNullable<number>;
+  readonly wordAverageLength: NonNullable<number>;
+  readonly wordLengthDistributionImage: URL | null;
 }
 
 type StatisticsObjectShape = NonNullable<StatisticsObjectInterface>;
@@ -24,15 +32,6 @@ enum LanguageOptions {
 }
 
 type LanguageOptionString = NonNullable<Lowercase<keyof typeof LanguageOptions>>;
-
-/** @description Represents an error within the text and additional information */
-interface TextMistakeInterface {
-  readonly paraIndex: number;
-  readonly nthOccurence: number;
-  readonly term: string;
-}
-
-type TextMistake = NonNullable<TextMistakeInterface>;
 
 /** @decription Represent possible values for text alignment */
 enum TextFormatOptions {
@@ -92,8 +91,8 @@ interface TranslationInterface {
 type TranslationShape = NonNullable<Record<ShortLanguageAnnotation, NonNullableTranslationInterface>>;
 export {
   ContextMenuOptionTypeString,
+  ErrorObjectShape, 
   LanguageOptionString,
-  TextMistake,
   TextFormatOptionString,
   TranslationInterface,
   TranslationShape,

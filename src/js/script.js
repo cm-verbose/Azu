@@ -21,6 +21,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _functions_document_styles__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./functions/document_styles */ "./src/ts/modules/functions/document_styles.ts");
 /* harmony import */ var _functions_translations__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./functions/translations */ "./src/ts/modules/functions/translations.ts");
 /* harmony import */ var _functions_context_menu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./functions/context_menu */ "./src/ts/modules/functions/context_menu.ts");
+/* harmony import */ var _functions_import_export__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./functions/import_export */ "./src/ts/modules/functions/import_export.ts");
+
 
 
 
@@ -50,6 +52,7 @@ class Editor {
         new _functions_context_menu__WEBPACK_IMPORTED_MODULE_8__["default"]();
         new _functions_document_styles__WEBPACK_IMPORTED_MODULE_6__["default"]();
         new _functions_editor_functions__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        new _functions_import_export__WEBPACK_IMPORTED_MODULE_9__["default"]();
         new _functions_settings__WEBPACK_IMPORTED_MODULE_1__["default"]();
         new _functions_statistics__WEBPACK_IMPORTED_MODULE_3__["default"]();
         new _functions_text_correction__WEBPACK_IMPORTED_MODULE_5__["default"]();
@@ -104,7 +107,9 @@ class ContextMenu {
             document.removeEventListener("keydown", escMenuClose);
         };
         document.addEventListener("keydown", escMenuClose);
-        this.moveMenu(atMousePos.x, atMousePos.y);
+        setTimeout(() => {
+            this.moveMenu(atMousePos.x, atMousePos.y);
+        });
     }
     /** @description move the menu to a specific position */
     moveMenu(x, y) {
@@ -144,7 +149,9 @@ class ContextMenu {
                 case "Cut": {
                     const selection = document.getSelection();
                     const activeElement = document.activeElement;
-                    if (!activeElement || selection === null)
+                    if (!activeElement ||
+                        selection === null ||
+                        (activeElement !== this.editor && activeElement.tagName !== "INPUT"))
                         return;
                     if (selection.toString().replace(/\s+/g, "").length === 0)
                         return;
@@ -465,6 +472,7 @@ class DocumentStyles {
         this.editor = document.querySelector("#editor");
         this.boldButton = document.querySelector("#format-bold");
         this.italicButton = document.querySelector("#format-italics");
+        this.imageUploadButton = document.querySelector("#format-upload-button");
         this.justifyLeftButton = document.querySelector("#format-justify-left");
         this.justifyCenterButton = document.querySelector("#format-justify-center");
         this.justifyRightButton = document.querySelector("#format-justify-right");
@@ -485,16 +493,14 @@ class DocumentStyles {
     instantiateTextStyles() {
         /**
          * FIXME: THIS IS DEPECRECATED AND COULD STOP WORKING AT ANY MOMENT
-         * TODO: THIS IS FEATURE DIFFERS FROM BROWSERS TO BROWSERS
          * */
-        this.boldButton.addEventListener("click", () => {
-            this.wrapElement(document.createElement("strong"));
-        });
+        this.boldButton.addEventListener("click", () => document.execCommand("bold", false));
         this.italicButton.addEventListener("click", () => document.execCommand("italic", false));
         this.underlineButton.addEventListener("click", () => document.execCommand("underline", false));
         this.strikeButtonButton.addEventListener("click", () => document.execCommand("strikeThrough", false));
         this.supScriptButton.addEventListener("click", () => document.execCommand("superScript", false));
         this.subScriptButton.addEventListener("click", () => document.execCommand("subScript", false));
+        this.instantiateUploadImage();
     }
     /** @description Sets events for text justification by the click of a button */
     instantiateTextJustification() {
@@ -502,6 +508,78 @@ class DocumentStyles {
         this.justifyLeftButton.addEventListener("click", this.justify("left"));
         this.justifyRightButton.addEventListener("click", this.justify("right"));
         this.justifyEvenButton.addEventListener("click", this.justify("justify"));
+    }
+    /** @description Uploads an image to the document at cursor position */
+    instantiateUploadImage() {
+        this.imageUploadButton.onclick = () => {
+            this.handleImageUpload();
+        };
+    }
+    /** @description Handles the uploaded images */
+    handleImageUpload() {
+        const selection = document.getSelection();
+        if (!selection)
+            return;
+        const range = selection.getRangeAt(0);
+        const uploadInput = document.createElement("input");
+        uploadInput.setAttribute("type", "file");
+        uploadInput.setAttribute("accept", "image/*");
+        uploadInput.setAttribute("multiple", "");
+        uploadInput.addEventListener("change", (e) => {
+            const fileList = e.target.files;
+            if (!fileList)
+                return;
+            const imageList = [];
+            this.readURLS(fileList).then((srcList) => {
+                for (const src of srcList) {
+                    const image = new Image();
+                    image.src = src;
+                    imageList.push(image);
+                }
+                if (range.commonAncestorContainer !== this.editor && !this.editor.contains(range.commonAncestorContainer))
+                    return;
+                range.deleteContents();
+                for (const image of imageList) {
+                    if (image.naturalWidth >= this.editor.getBoundingClientRect().width) {
+                        image.width = this.editor.getBoundingClientRect().width;
+                    }
+                    range.insertNode(image);
+                    range.setEndBefore(image);
+                }
+                uploadInput.remove();
+            });
+        });
+        uploadInput.style.display = "none";
+        document.body.appendChild(uploadInput);
+        uploadInput.click();
+    }
+    /** @description reads images src urls then returns them */
+    readURLS(fileList) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const srcList = [];
+            const promises = [];
+            /*
+              Why we are doing it this way is because reader.onload is asynchronous
+              without supporting .then() or any operation that would make the value
+              usable synchronously
+            */
+            for (const file of fileList) {
+                const reader = new FileReader();
+                const promise = new Promise((resolve, reject) => {
+                    reader.onload = () => {
+                        if (!reader.result)
+                            return;
+                        srcList.push(reader.result);
+                        resolve();
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                promises.push(promise);
+            }
+            yield Promise.all(promises);
+            return srcList;
+        });
     }
     /** @description Handles text justification events */
     justify(position) {
@@ -546,38 +624,39 @@ class DocumentStyles {
         };
     }
     /**
-     * @description a function used to replace the document.execCommand() element creation
+     * @description a function used to replace the document.execCommand() element creation, as
+     * behaviour varies between browsers, normalizing this function can lead to more consistent behaviour
      * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand | document.execCommand(); }
      */
     wrapElement(element) {
-        // TODO: FIXME: 
         const selection = document.getSelection();
         if (!selection)
             return;
         const range = selection.getRangeAt(0);
-        const childNodes = range.cloneContents().childNodes;
-        const elements = [];
-        for (const child of childNodes) {
-            elements.push(child);
-        }
-        range.deleteContents();
-        if (elements.length === 0)
+        const children = range.extractContents();
+        if (children.childNodes.length === 0)
             return;
-        if (elements.length === 1) {
-            console.log(element, elements);
-            if (elements[0].parentElement && element.nodeType === elements[0].parentElement.nodeType) {
-                console.log(elements[0].childNodes);
-            }
-            else {
-                element.appendChild(elements[0]);
-                range.insertNode(element);
-                range.collapse(true);
-                range.setStartAfter(element);
-                selection.removeAllRanges();
-                selection.addRange(range);
+        console.log(element);
+        // TODO:
+    }
+    /** @description matches all subchildren of a certain type */
+    matchAllSubChildren(root) {
+        const result = [];
+        for (const node of this.traverseChildren(root)) {
+            if (node.nodeName === root.nodeName) {
+                result.push(node);
             }
         }
-        console.log(elements, element);
+        return result;
+    }
+    /** @description traverses children of a node */
+    *traverseChildren(element) {
+        if (!element)
+            return;
+        yield element;
+        for (const node of element.childNodes) {
+            yield* this.traverseChildren(node);
+        }
     }
     /** @description Show dropdown indicating the font list under the font select menu */
     instantiateDropdown() {
@@ -635,6 +714,8 @@ class EditorFunctions {
     /** @description Clears the editor when empty (remaining <div>, <br> elements) */
     handleEmptyEditor() {
         if (this.editor.innerText.replace(/\s+/g, "").length !== 0)
+            return;
+        if (!(this.editor.childNodes.length === 1 && this.editor.childNodes[0].nodeType === Node.TEXT_NODE))
             return;
         this.initialDiv.innerHTML = "";
     }
@@ -739,6 +820,122 @@ class EditorFunctions {
 
 /***/ }),
 
+/***/ "./src/ts/modules/functions/import_export.ts":
+/*!***************************************************!*\
+  !*** ./src/ts/modules/functions/import_export.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ImportExport)
+/* harmony export */ });
+/**
+ *
+ * @description Handles file imports / exports.
+ *
+ */
+class ImportExport {
+    constructor() {
+        this.closeViewsBackground = document.querySelector("#close-import-export-view");
+        this.editor = document.querySelector("#editor");
+        this.exportButton = document.querySelector("#export-button");
+        this.importButton = document.querySelector("#import-button");
+        this.exportView = document.querySelector("#export-document-view");
+        this.importView = document.querySelector("#import-document-view");
+        this.importDragZone = document.querySelector("#import-drag-zone");
+        this.instantiateImportExport();
+    }
+    instantiateImportExport() {
+        this.handleViews();
+        this.handleImports();
+    }
+    handleImports() {
+        this.importDragZone.addEventListener("click", () => this.handleDocumentImport());
+    }
+    handleDocumentImport() {
+        const fileInput = document.createElement("input");
+        fileInput.setAttribute("type", "file");
+        fileInput.style.display = "none";
+        fileInput.addEventListener("change", (e) => this.handleUpload(e));
+        document.body.appendChild(fileInput);
+        fileInput.click();
+    }
+    /** @description handles the uploaded files */
+    handleUpload(e) {
+        const target = e.target;
+        const files = target.files;
+        if (!files || files.length !== 1)
+            return;
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            const content = reader.result;
+            if (!reader.result || content.length === 0)
+                return;
+            console.log(file.type);
+            this.importContent(content, file.type);
+        };
+        reader.readAsText(file);
+    }
+    /** @description imports the content from a file type to  */
+    importContent(content, type) {
+        if (this.editor.textContent) {
+            const textContent = this.editor.textContent;
+            if (textContent.replace(/\s+/g, "").length !== 0) {
+                console.log("empty");
+            }
+        }
+        switch (type) {
+            /* no extension is interpreted as an alias of "text/plain" */
+            case "":
+            case "text/plain":
+                {
+                    if (content.replace(/\s+/g, ""))
+                        return; // TODO: Better indications for the document being empty
+                }
+                break;
+            default:
+                {
+                    const span = this.importDragZone.querySelector("span");
+                    const oldContent = span.textContent;
+                    span.textContent = `File type, ${type} not supported`;
+                    setTimeout(() => {
+                        span.textContent = oldContent;
+                    }, 2000);
+                }
+                break;
+        }
+    }
+    handleViews() {
+        this.exportButton.addEventListener("click", () => this.handleExport());
+        this.importButton.addEventListener("click", () => this.handleImport());
+        this.closeViewsBackground.addEventListener("click", () => this.closeViews());
+    }
+    /** @description exports the current document as a file */
+    handleExport() {
+        this.exportButton.addEventListener("click", () => {
+            this.exportView.style.display = "block";
+            this.closeViewsBackground.style.display = "block";
+        });
+    }
+    /** @description imports content to the current document */
+    handleImport() {
+        this.importButton.addEventListener("click", () => {
+            this.importView.style.display = "block";
+            this.closeViewsBackground.style.display = "block";
+        });
+    }
+    closeViews() {
+        this.closeViewsBackground.style.display = "none";
+        this.exportView.style.display = "none";
+        this.importView.style.display = "none";
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/ts/modules/functions/interface.ts":
 /*!***********************************************!*\
   !*** ./src/ts/modules/functions/interface.ts ***!
@@ -765,7 +962,8 @@ class UserInterface {
           within the Storage class.
         */
         this.zoomCurr = parseInt(localStorage.getItem("zoomLevel"), 10) / 100;
-        this.MAX_ALLOWED_ZOOM = parseInt(this.zoomRangeInput.max);
+        this.MAX_ALLOWED_ZOOM = parseFloat(this.zoomRangeInput.max);
+        this.MIN_ALLOWED_ZOOM = parseFloat(this.zoomRangeInput.min); // TODO:
         this.MAX_TITLE_LENGTH = 50;
         this.instantiateUIEvents();
     }
@@ -797,8 +995,7 @@ class UserInterface {
         e.preventDefault();
         /* Different browsers usually have a different increment on zoom */
         const addedZoom = (e.deltaY * -1 < 0 ? -1 : 1) * 0.25;
-        if (this.zoomCurr + addedZoom > this.MAX_ALLOWED_ZOOM ||
-            this.zoomCurr + addedZoom < parseFloat(this.zoomRangeInput.min))
+        if (this.zoomCurr + addedZoom > this.MAX_ALLOWED_ZOOM || this.zoomCurr + addedZoom < this.MIN_ALLOWED_ZOOM)
             return;
         this.zoomCurr += addedZoom;
         this.editor.style.scale = `${this.zoomCurr}`;
@@ -832,10 +1029,9 @@ class UserInterface {
     handleInputZoom() {
         let previousZoom = this.zoomCurr;
         const zoomAmount = parseInt(this.zoomInput.value, 10) / 100;
-        const minZoom = parseFloat(this.zoomRangeInput.min);
         this.zoomCurr = zoomAmount >= this.MAX_ALLOWED_ZOOM ? this.MAX_ALLOWED_ZOOM : zoomAmount;
-        if (this.zoomCurr < minZoom) {
-            if (previousZoom < minZoom)
+        if (this.zoomCurr < this.MIN_ALLOWED_ZOOM) {
+            if (previousZoom < this.MIN_ALLOWED_ZOOM)
                 previousZoom = 1;
             this.zoomInput.value = `${previousZoom * 100}`;
             this.editor.style.scale = `${previousZoom}`;
@@ -851,7 +1047,7 @@ class UserInterface {
     }
     /** @description Enforces digit only input */
     enforeDigitOnly(e) {
-        if (!/Backspace|\d/g.test(e.key))
+        if (!/Backspace|\d/g.test(e.code))
             e.preventDefault();
     }
     /** @description If the title value is invalid, set the document title to "Unnamed" */
@@ -877,6 +1073,102 @@ class UserInterface {
 
 /***/ }),
 
+/***/ "./src/ts/modules/functions/languages/corrector.ts":
+/*!*********************************************************!*\
+  !*** ./src/ts/modules/functions/languages/corrector.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Corrector)
+/* harmony export */ });
+/**
+ *
+ * @description serves to extend other correctors
+ *
+ */
+class Corrector {
+    constructor() {
+        this.lang = "";
+        this.numberRegex =
+            /(^(?![a-zA-Z]))(((-?\d+(\.\d+)?((e)(\+|-)\d+)?i?)(?![a-zA-Z]))|0x([a-fA-F]|\d)+|0b(0|1)+|0o[0-7]+)(?=\b)/gi;
+    }
+    correct(text, index) {
+        return [{ term: text, index: index }];
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/ts/modules/functions/languages/french.ts":
+/*!******************************************************!*\
+  !*** ./src/ts/modules/functions/languages/french.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FrenchCorrector: () => (/* binding */ FrenchCorrector)
+/* harmony export */ });
+/* harmony import */ var _corrector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./corrector */ "./src/ts/modules/functions/languages/corrector.ts");
+/**
+ *
+ * @description corrects French text
+ *
+ */
+
+class FrenchCorrector extends _corrector__WEBPACK_IMPORTED_MODULE_0__["default"] {
+    constructor(dictionnary) {
+        super();
+        (this.lang = "french"), (this.dictionnary = dictionnary);
+    }
+    /** @description corrects mistakes */
+    correct(text, index) {
+        const content = this.cleanContent(text);
+        if (content.replace(/\s+|\u200B/g, "").length === 0)
+            return [];
+        return this.correctOrthography(content, index);
+    }
+    /** @description cleans the content */
+    cleanContent(text) {
+        const cleaned = text.replace(/\u00A0/g, " ").trim();
+        return cleaned;
+    }
+    /** @description checks the ortography of a sequence of words */
+    correctOrthography(content, index) {
+        const punctuationRegex = /!|\.|\(|\)|\[|\]|\$|;|:|&|\*|@|\{|\}|"|'|<|>|\+|-/g;
+        const words = content.replace(punctuationRegex, "").split(" ");
+        const errors = [];
+        for (const word of words) {
+            const numberRegex = this.numberRegex;
+            if (word.match(numberRegex))
+                continue;
+            if (word.includes("'")) {
+                const apostrophes = word.match(/"'"/g);
+                if (apostrophes && apostrophes.length >= 2) {
+                    errors.push({ term: word, index: index });
+                }
+            }
+            else if (word.match(/([a-zA-Z]|é|à|è|ù|â|ê|î|ô|û|ë|ï|ü|ç)+/gi)) {
+                if (this.dictionnary.includes(word.toLocaleLowerCase()))
+                    continue;
+                errors.push({ term: word, index: index });
+            }
+            else {
+                if (word.replace(/\s+/g, "").length === 0)
+                    continue;
+                errors.push({ term: word, index: index });
+            }
+        }
+        return errors;
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/ts/modules/functions/settings.ts":
 /*!**********************************************!*\
   !*** ./src/ts/modules/functions/settings.ts ***!
@@ -894,85 +1186,43 @@ __webpack_require__.r(__webpack_exports__);
  */
 class Settings {
     constructor() {
-        this.mainView = document.querySelector("#app");
-        this.settingsButton = document.querySelector("#setting-button");
+        this.appView = document.querySelector("#app");
+        this.closeSettingsButton = document.querySelector("#close-settings-button");
+        this.openSettingsButton = document.querySelector("#setting-button");
         this.settingsView = document.querySelector("#settings-view");
-        this.settingsCloseButton = document.querySelector("#close-settings");
-        this.currentThemeContainer = document.querySelector("#current-system-scheme");
-        this.themesGrid = document.querySelector("#settings-apprearance-themes");
-        this.customThemeInput = document.querySelector("#custom-theme-file-input");
-        this.instantiateSettings();
+        this.themeSelectContainer = document.querySelector("#theme-option-select-ul");
+        this.initialise_settings();
     }
-    /** @description Initialises setting options */
-    instantiateSettings() {
-        this.setButtonEvents();
-        this.instantiateThemeSelection();
+    initialise_settings() {
+        this.iniChangeView();
     }
-    /** @description sets events relative to opening and closing the settings view */
-    setButtonEvents() {
-        this.settingsButton.addEventListener("click", () => {
-            this.mainView.style.display = "none";
-            this.settingsView.style.display = "block";
-            document.body.style.overflowY = "scroll";
-        });
-        this.settingsCloseButton.addEventListener("click", () => {
-            this.settingsView.style.display = "none";
-            this.mainView.style.display = "block";
-            document.body.style.overflowY = "hidden";
-        });
+    /** @description instantiates events relating to opening and closing the settings*/
+    iniChangeView() {
+        this.openSettingsButton.addEventListener("click", () => this.setSettingView("open"));
+        this.closeSettingsButton.addEventListener("click", () => this.setSettingView("close"));
+        this.instantiateThemeSelect();
     }
-    /** @description Instantiates events related to theme change*/
-    instantiateThemeSelection() {
-        for (const theme of this.themesGrid.children) {
-            const themeContent = theme.getAttribute("id");
-            if (themeContent !== "custom") {
-                theme.addEventListener("click", () => {
-                    document.body.setAttribute("class", themeContent);
+    /** @description opens or closes the settings view */
+    setSettingView(state) {
+        this.appView.style.display = state === "open" ? "none" : "block";
+        this.settingsView.style.display = state === "open" ? "block" : "none";
+    }
+    /** @description Changes the current theme of the document based on the user option */
+    instantiateThemeSelect() {
+        for (let i = 0; i < this.themeSelectContainer.childElementCount; i++) {
+            const children = this.themeSelectContainer.children.item(i);
+            if (["light-theme-option", "dark-theme-option", "system-theme-option"].includes(children.id)) {
+                children.addEventListener("click", () => {
+                    const activeThemeLabel = "active-theme";
+                    if (document.querySelector(`.${activeThemeLabel}`) !== null) {
+                        const element = this.themeSelectContainer.querySelector(`.${activeThemeLabel}`);
+                        element.classList.remove(activeThemeLabel);
+                    }
+                    children.classList.add(activeThemeLabel);
+                    document.body.setAttribute("class", children.id.replace("-theme-option", ""));
                 });
             }
-            else {
-                this.handleCustomThemeInput();
-            }
         }
-        const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
-        const detectThemeChange = (e) => {
-            this.currentThemeContainer.textContent = e.matches ? "dark" : "light";
-        };
-        this.currentThemeContainer.innerText = colorScheme.matches ? "dark" : "light";
-        colorScheme.addEventListener("change", (e) => detectThemeChange(e));
-    }
-    /** @description Instantiates events for the custom styles input */
-    handleCustomThemeInput() {
-        this.customThemeInput.addEventListener("cancel", () => {
-            console.log("Cancelled");
-        });
-        this.customThemeInput.addEventListener("change", () => {
-            if (!this.customThemeInput.files || this.customThemeInput.files.length === 0)
-                return;
-            const file = this.customThemeInput.files[0];
-            if (file.type !== "text/css")
-                return; // not a CSS file
-            const reader = new FileReader();
-            reader.addEventListener("load", (e) => {
-                if (!e || !e.target)
-                    return;
-                const result = e.target.result;
-                const customElementLink = document.querySelector("#CustomCSSThemeLink");
-                if (customElementLink === null) {
-                    const stylesElement = document.createElement("link");
-                    stylesElement.rel = "stylesheet";
-                    stylesElement.type = "text/css";
-                    stylesElement.href = result;
-                    stylesElement.id = "CustomCSSThemeLink";
-                    document.head.appendChild(stylesElement);
-                }
-                else {
-                    const styleElement = customElementLink;
-                    styleElement.setAttribute("href", result);
-                }
-            });
-            reader.readAsDataURL(file);
-        });
     }
 }
 
@@ -1019,7 +1269,7 @@ class Statictics {
         this.statisticsCover.addEventListener("click", () => this.closeStatisticsView());
         this.configureWordCount();
     }
-    /** @description Count words at an interval TODO: Fix count*/
+    /** @description Count words at an interval */
     configureWordCount() {
         let timer = setTimeout(() => { });
         this.editor.addEventListener("input", () => {
@@ -1042,7 +1292,7 @@ class Statictics {
         this.statisticsCover.style.display = "block";
         const content = this.editor.textContent;
         if (!content) {
-            return; // TODO:
+            return;
         }
         const text = content
             .replace(/\s+/g, " ")
@@ -1184,6 +1434,7 @@ __webpack_require__.r(__webpack_exports__);
 class Storage {
     constructor() {
         this.editor = document.querySelector("#editor");
+        this.themeSelectContainer = document.querySelector("#theme-option-select-ul");
         this.zoomRangeInput = document.querySelector("#zoom-range");
         this.zoomInput = document.querySelector("#zoom-control-input");
         this.zoomAmount = 1;
@@ -1205,11 +1456,14 @@ class Storage {
         });
         document.addEventListener("DOMContentLoaded", () => {
             const zoomLevel = localStorage.getItem("zoomLevel");
-            if (zoomLevel !== null) {
+            if (zoomLevel !== null && !Number.isNaN(parseInt(zoomLevel, 10))) {
                 this.zoomAmount = parseInt(zoomLevel, 10);
                 this.zoomRangeInput.value = `${this.zoomAmount / 100}`;
                 this.zoomInput.value = `${this.zoomAmount}`;
                 this.editor.style.scale = `${this.zoomAmount / 100}`;
+            }
+            else {
+                this.editor.style.scale = "1";
             }
             const fetchedSettings = localStorage.getItem("Settings");
             if (fetchedSettings === null)
@@ -1222,6 +1476,17 @@ class Storage {
                             if (value === null)
                                 return;
                             document.body.setAttribute("class", `${value}`);
+                            const themeSelectLi = this.themeSelectContainer.querySelector(`#${value}-theme-option`);
+                            if (document.querySelector(".active-theme") === null) {
+                                themeSelectLi.classList.add("active-theme");
+                            }
+                            else {
+                                const activeElement = document.querySelector(".active-theme");
+                                if (!activeElement)
+                                    return;
+                                activeElement.classList.remove("active-theme");
+                                themeSelectLi.classList.add("active-theme");
+                            }
                         }
                         break;
                     case "lang":
@@ -1250,6 +1515,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ TextCorrection)
 /* harmony export */ });
+/* harmony import */ var _languages_french__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./languages/french */ "./src/ts/modules/functions/languages/french.ts");
+/**
+ *
+ * @description Implements text correction
+ *
+ */
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1259,244 +1530,351 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-/**
- *
- * @description Implements text correction
- *
- */
+
 class TextCorrection {
     constructor() {
-        this.contextMenuOptions = document.querySelector("#context-menu-options");
         this.contextMenu = document.querySelector("#context-menu");
-        this.contextMenuCover = document.querySelector("#main-cover");
+        this.contextMenuOptions = document.querySelector("#context-menu-options");
+        this.contextMenuOverlay = document.querySelector("#main-cover");
         this.editor = document.querySelector("#editor");
-        this.currentWordListLang = "";
-        this.wordList = [];
-        this.CORRECTION_INTERVAL = 500;
-        this.initializeTextCorrection();
+        /* Internal states */
+        this.currentLanguage = "";
+        this.currentCorrector = null;
+        this.wordSet = [];
+        this.TEXT_CORRECTION_INTERVAL = 1000;
+        this.iniTextCorrection();
     }
-    /** @description instantiates all methods related to text correction */
-    initializeTextCorrection() {
-        this.configureTextCorrection();
-    }
-    /** @description Attempts to find errors within the document */
-    configureTextCorrection() {
+    iniTextCorrection() {
         let timer = setTimeout(() => { });
         this.editor.addEventListener("input", () => {
             clearTimeout(timer);
             timer = setTimeout(() => {
-                queueMicrotask(() => __awaiter(this, void 0, void 0, function* () {
-                    if (this.currentWordListLang === "" || this.wordList.length === 0) {
-                        this.currentWordListLang = "french";
-                        yield this.loadDictionnary("french").then((json) => {
-                            this.setDictionnary(json);
-                        });
-                    }
-                    this.verifyText();
-                }));
-            }, this.CORRECTION_INTERVAL);
+                const language = "french";
+                this.scanText(language);
+            }, this.TEXT_CORRECTION_INTERVAL);
         });
     }
-    /** @description Loads a specified dictionnary */
-    loadDictionnary(lang) {
+    /** @description loads a specified dictionnary, containing words in the specified language */
+    loadDictionnary(language) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield fetch(`./json/${lang}.json`);
-            const dictionnary = yield response.json();
-            return dictionnary;
+            const response = yield fetch(`./json/${language}.json`);
+            const dictionnary = (yield response.json());
+            this.currentLanguage = language;
+            this.wordSet = dictionnary;
         });
     }
-    /** @description sets value this.wordList */
-    setDictionnary(dictionnary) {
-        this.wordList = dictionnary;
+    /** @description scan text to find words */
+    scanText(language) {
+        if (this.wordSet.length === 0 || this.currentLanguage !== language) {
+            this.loadDictionnary(language).then(() => {
+                this.identifyParagraphs(language);
+            });
+        }
+        else {
+            this.identifyParagraphs(language);
+        }
     }
-    /** @description Finds errors in text */
-    verifyText() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.wordList.length === 0)
-                return;
-            let paraIndex = 0;
-            for (const para of this.editor.children) {
-                const textContent = para.textContent;
-                /* Triming a placeholder \u200B, Zero-width space in order to remove it from tokens */
-                if (textContent === null || textContent.replace(/\u200B/g, "").length === 0) {
-                    paraIndex += 1;
-                    continue;
-                }
-                yield this.scanText(para, paraIndex).then(() => {
-                    paraIndex += 1;
-                });
+    /** @description identify the paragraphs to correct */
+    identifyParagraphs(lang) {
+        let i = 0;
+        for (const el of this.editor.children) {
+            const paragraph = el;
+            if (paragraph.textContent === "" || paragraph.textContent === null) {
+                i += 1;
+                continue;
             }
-        });
+            this.correctText({ content: paragraph.textContent, paragraphIndex: i }, lang);
+            i += 1;
+        }
     }
-    /** @description Scans text content for errors, then structures errors in an object */
-    scanText(paragraph, paraIndex) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const textContent = paragraph.textContent
-                .trim()
-                .replace(/\u200B/g, "")
-                .replace(/\u00A0/g, "");
-            const tokens = textContent.split(" ");
-            const errorArray = [];
-            switch (this.currentWordListLang) {
+    /** @description corrects text based on current language */
+    correctText(contentValue, language) {
+        let tokens = [];
+        if (this.currentCorrector === null || this.currentCorrector.lang !== language) {
+            switch (this.currentLanguage) {
                 case "french":
                     {
-                        tokens.forEach((token) => {
-                            const errorTerm = {
-                                paraIndex: paraIndex,
-                                nthOccurence: errorArray.filter((x) => x.term === token || x.paraIndex === paraIndex).length,
-                                term: "",
-                            };
-                            const addTerm = (term) => {
-                                Object.defineProperty(errorTerm, "term", {
-                                    value: term,
-                                    enumerable: true,
-                                });
-                                errorArray.push(errorTerm);
-                            };
-                            const word = token.includes("'") ? token.split("'") : token;
-                            if (typeof word === "string") {
-                                const strWord = word.replace(/[^\w\s]+/g, "");
-                                /* exclude numbers, decimal numbers, exponential notation, imaginary forms */
-                                if (strWord.match(/(-?\d+(.\d+)?((e|E)(\+|-)\d+)?i?)(?![a-zA-Z])/g))
-                                    return;
-                                if (this.wordList.includes(strWord.toLowerCase()) || strWord.replace(/\s+|\u200B/g, "") === "")
-                                    return;
-                                addTerm(strWord.trim());
-                            }
-                            else if (Array.isArray(word)) {
-                                /* case for terms composed by elision such as "c'est" or "presqu'île" */
-                                word.forEach((part, index) => {
-                                    const p = part.replace(/[^\w\s]+/g, "");
-                                    if (index === 0) {
-                                        /*  "c'est" is broken into "c" and "est", but "c" is not a valid term, but by elision, "ce" is */
-                                        if (this.wordList.includes((p + "e").toLowerCase()))
-                                            return;
-                                        addTerm((p + "e").trim());
-                                    }
-                                    else if (!this.wordList.includes(p.toLowerCase())) {
-                                        addTerm(p.trim());
-                                    }
-                                });
-                            }
-                        });
-                        if (errorArray.length === 0)
-                            return;
-                        this.markIncorrectTerm(errorArray);
+                        this.currentCorrector = new _languages_french__WEBPACK_IMPORTED_MODULE_0__.FrenchCorrector(this.wordSet);
                     }
                     break;
             }
-        });
-    }
-    /** FIXME: Revert user cursor position on edit */
-    /** @description marks incorrect terms within the DOM, and suggestions along with it */
-    markIncorrectTerm(errorArray) {
-        // \u200C, \uFEFF
-        errorArray.forEach((err) => {
-            const paragraph = this.editor.children[err.paraIndex];
-            const termRegex = new RegExp(`\\b(${err.term})\\b`, "g");
-            if (!paragraph.textContent)
-                return;
-            paragraph.textContent = paragraph.textContent.replace(termRegex, "\uFEFF$1\u200C");
-        });
-        this.editor.innerHTML = this.editor.innerHTML.replace(/\uFEFF(.*?)\u200C/g, "<span data-temp-err>$1</span>");
-        const errorNodes = document.querySelectorAll("[data-temp-err]");
-        for (const error of errorNodes) {
-            const span = document.createElement("span");
-            span.innerHTML = error.innerHTML;
-            span.setAttribute("class", "error");
-            error.replaceWith(span);
         }
-        /* looping again since looping paragraph by paragraph only preserves the last paragraph's events */
-        const errors = document.getElementsByClassName("error");
-        for (const error of errors) {
-            error.addEventListener("contextmenu", (e) => this.showSuggestions(e));
-            this.observeErrorChange(error);
-        }
-    }
-    /** @description Shows suggestions using the Levensthein distance algorithm */
-    showSuggestions(e) {
-        const span = e.target;
-        const term = span.textContent;
-        if (!term || term.length === 0)
+        tokens = this.currentCorrector.correct(contentValue.content, contentValue.paragraphIndex);
+        if (tokens.length === 0)
             return;
-        let filteredList = [];
-        if (term.length <= 3) {
-            filteredList = this.wordList.filter((x) => x.startsWith(term) && x.length < term.length + 2);
-        }
-        else {
-            filteredList = this.wordList.filter((x) => x.startsWith(term.slice(0, 3)));
-        }
-        const accumulator = [];
-        for (const word of filteredList) {
-            const editDistance = this.computeLevenstheinDistance(word, term.toLowerCase());
-            accumulator.push({ word: word, edit: editDistance });
-        }
-        const suggestions = accumulator
-            .sort((a, b) => a.edit - b.edit)
-            .reverse()
-            .slice(0, 3);
-        /* TODO: Wait for contextMenuOptions's children as they might not exist */
-        setTimeout(() => {
-            const errorMessage = document.createElement("li");
-            const suggestionFragment = document.createDocumentFragment();
-            errorMessage.setAttribute("id", "correction-error-option");
-            const languageDescriptor = document.createElement("h1");
-            const capitalizedLang = this.currentWordListLang[0].toLocaleUpperCase() + this.currentWordListLang.slice(1);
-            languageDescriptor.innerHTML = capitalizedLang;
-            suggestionFragment.appendChild(languageDescriptor);
-            const suggestionMessage = document.createElement("p");
-            if (suggestions.length === 0) {
-                suggestionMessage.innerHTML = `No suggestions for term "${term}"`;
-                suggestionFragment.appendChild(suggestionMessage);
+        this.markIncorrect(tokens);
+    }
+    /** @description marks text inccorrect in the editor */
+    markIncorrect(tokens) {
+        /*
+          FIXME: Part of a detected erred word can appear as an error
+          within any word that contains a substring matching that word
+          for example: have and ve, ve is erred, but the "ve" part of
+          "have" is highlighted (when "ve" is written last ?)
+        */
+        const rangeSet = [];
+        for (const token of tokens) {
+            const node = this.editor.children[token.index];
+            const textNodes = this.filterTextNodesUnder(node);
+            const unifiedText = textNodes.map((x) => x.textContent).join("\uFFFF");
+            if (token.term.replace(/\s+/g, "").length === 0)
+                continue;
+            const termRegex = new RegExp(`\\b${token.term.split("").join("\uFFFF?")}\\b`, "g");
+            const match = unifiedText.match(termRegex);
+            if (!match || match.length === 0)
+                continue;
+            const delimitations = [];
+            let separators = this.getIndicesOf("\uFFFF", unifiedText);
+            if (!separators || separators.length === 0)
+                separators = [];
+            if (match.length === 1) {
+                let temp = "";
+                const startIndex = unifiedText.indexOf(match[0]);
+                for (let i = startIndex; i < unifiedText.length; i++) {
+                    temp += unifiedText[i];
+                    if (temp.match(termRegex))
+                        break;
+                }
+                const endIndex = startIndex + temp.length;
+                delimitations.push({ start: startIndex, end: endIndex });
             }
             else {
-                const ism = `The spelling for the term "${term}" seems incorrect, here are some suggestions :`;
-                suggestionMessage.innerHTML = ism;
-                const suggestionsUL = document.createElement("ul");
-                suggestions.forEach((suggestion) => {
-                    const suggestionLi = document.createElement("li");
-                    suggestionLi.textContent = suggestion.word;
-                    suggestionLi.addEventListener("click", () => {
-                        const textNode = document.createTextNode(suggestion.word);
-                        span.replaceWith(textNode);
-                        this.contextMenu.style.display = "none";
-                        this.contextMenuCover.style.display = "none";
-                    });
-                    suggestionsUL.appendChild(suggestionLi);
-                });
-                suggestionFragment.appendChild(suggestionMessage);
-                suggestionFragment.appendChild(suggestionsUL);
-            }
-            errorMessage.appendChild(suggestionFragment);
-            const firstChild = this.contextMenuOptions.firstElementChild;
-            const errorJoiner = document.createDocumentFragment();
-            errorJoiner.append(errorMessage, document.createElement("hr"));
-            this.contextMenuOptions.insertBefore(errorJoiner, firstChild);
-        });
-    }
-    /** @description Changes the content of the error element if the updated text is valid */
-    observeErrorChange(error) {
-        const options = {
-            childList: true,
-            characterData: true,
-            characterDataOldValue: true,
-            subtree: true,
-        };
-        const observer = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                const textContent = mutation.target.textContent;
-                if (mutation.type !== "characterData" || !textContent)
-                    return;
-                if (this.wordList.includes(textContent)) {
-                    const text = document.createTextNode(textContent);
-                    error.replaceWith(text);
+                for (const m of match) {
+                    const indices = this.getIndicesOf(m, unifiedText);
+                    if (!indices)
+                        continue;
+                    for (const index of indices) {
+                        let temp = "";
+                        for (let i = index; i < unifiedText.length; i++) {
+                            temp += unifiedText[i];
+                            if (temp.match(termRegex))
+                                break;
+                        }
+                        const endIndex = index + temp.length;
+                        delimitations.push({ start: index, end: endIndex });
+                    }
                 }
             }
-        });
-        observer.observe(error, options);
+            /* Remove duplicated objects (identical keys and values) */
+            const delimitationsSet = [...new Set(delimitations.map((item) => JSON.stringify(item)))].map((item) => JSON.parse(item));
+            for (const delimitation of delimitationsSet) {
+                const ps = separators.filter((x) => x <= delimitation.start); // separators passed (start)
+                const pn = separators.filter((x) => x < delimitation.end); // separators passed (end)
+                const startingNodeIndex = ps.length;
+                const endingNodeIndex = pn.length;
+                let startOffset, endOffset = 0;
+                if (ps.length !== 0) {
+                    startOffset = delimitation.start - ps[ps.length - 1] - 1;
+                }
+                else {
+                    startOffset = delimitation.start;
+                }
+                if (pn.length !== 0) {
+                    endOffset = delimitation.end - pn[pn.length - 1] - 1;
+                }
+                else {
+                    endOffset = delimitation.end;
+                }
+                const range = new Range();
+                range.setStart(textNodes[startingNodeIndex], startOffset);
+                range.setEnd(textNodes[endingNodeIndex], endOffset);
+                rangeSet.push(range);
+            }
+        }
+        this.createErrorElements(rangeSet);
+    }
+    /** @description creates the error elements from the provided ranges */
+    createErrorElements(rangeArray) {
+        /* FIXME: Maintain user cursor position within a erred span */
+        for (const range of rangeArray) {
+            const contents = range.extractContents().childNodes;
+            if (contents.length === 0)
+                continue;
+            const spanElement = this.createErrorSpan();
+            for (let i = 0; i < contents.length; i++) {
+                const child = contents.item(i);
+                if (child.nodeType === Node.ELEMENT_NODE) {
+                    const element = child;
+                    if (element.textContent === "")
+                        element.remove();
+                }
+            }
+            spanElement.append(...contents);
+            range.insertNode(spanElement);
+        }
+        this.cleanUpDeeplyNested();
     }
     /**
-     * @description computes Levensthein distance
+     * @description removes nth time nested terms and adds a MutationObserver
+     * to see changes, after replacing nested elements
+     */
+    cleanUpDeeplyNested() {
+        const errorElements = document.getElementsByClassName("error");
+        if (errorElements.length === 0)
+            return;
+        for (const error of errorElements) {
+            if (error.querySelector(".error")) {
+                const nodes = this.selectAllMatching(".error", error);
+                const span = this.createErrorSpan();
+                span.append(...nodes[nodes.length - 1].childNodes);
+                error.replaceWith(span);
+            }
+        }
+        for (let i = 0; i < document.getElementsByClassName("error").length; i++) {
+            const child = document.getElementsByClassName("error").item(i);
+            this.observeSpan(child);
+        }
+    }
+    /** @description generator method used to traverse children */
+    *traverseChildren(element) {
+        if (!element)
+            return;
+        yield element;
+        for (const node of element.childNodes) {
+            yield* this.traverseChildren(node);
+        }
+    }
+    /** @description get nodes matching a selector */
+    selectAllMatching(selector, root) {
+        const result = [];
+        for (const node of this.traverseChildren(root)) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.matches(selector)) {
+                    result.push(node);
+                }
+            }
+        }
+        return result;
+    }
+    /** @description creates the error span elements */
+    createErrorSpan() {
+        const span = document.createElement("span");
+        span.addEventListener("contextmenu", () => this.displaySuggestions(span));
+        span.setAttribute("class", "error");
+        return span;
+    }
+    /** @description observes if the user corrects their mistakes, removes span if so */
+    observeSpan(span) {
+        const configuration = {
+            characterData: true,
+            childList: true,
+            subtree: true,
+        };
+        const callback = (mutationList, observer) => {
+            for (const mutation of mutationList) {
+                if (!mutation.target)
+                    observer.disconnect();
+                const text = span.textContent;
+                if (!text || text === "")
+                    return;
+                const checkCorrected = this.currentCorrector.correct(text.toLowerCase(), -1);
+                if (checkCorrected.length === 0) {
+                    const textNode = new Text(text);
+                    const selection = document.getSelection();
+                    const oldRange = selection.getRangeAt(0);
+                    const startOffset = oldRange.startOffset;
+                    const endOffset = oldRange.endOffset;
+                    span.replaceWith(textNode);
+                    console.log(startOffset, endOffset);
+                    setTimeout(() => {
+                        const newRange = new Range();
+                        newRange.setStart(textNode, startOffset);
+                        newRange.setEnd(textNode, endOffset);
+                        newRange.collapse(false);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                    });
+                }
+            }
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(span, configuration);
+    }
+    /** @description computes suggestions for the current term*/
+    displaySuggestions(span) {
+        const text = span.textContent;
+        if (!text)
+            return;
+        this.contextMenu.style.display = "none";
+        this.computeSuggestions(text).then((suggestions) => {
+            setTimeout(() => {
+                this.editContextMenu(suggestions.map((x) => x.term), text, span);
+            });
+        });
+    }
+    /** @description edits the contextMenu in order to add the suggestions */
+    editContextMenu(suggestions, originalTerm, errorElement) {
+        const errorMessage = document.createElement("li");
+        const suggestionFragment = document.createDocumentFragment();
+        errorMessage.setAttribute("id", "correction-error-option");
+        const languageDescriptor = document.createElement("h1");
+        const capitalizedLang = this.currentLanguage[0].toLocaleUpperCase() + this.currentLanguage.slice(1);
+        languageDescriptor.textContent = capitalizedLang;
+        suggestionFragment.appendChild(languageDescriptor);
+        const suggestionMessage = document.createElement("p");
+        if (suggestions.length === 0) {
+            suggestionMessage.innerHTML = `No suggestions for the term ${originalTerm}`;
+            suggestionFragment.appendChild(suggestionMessage);
+        }
+        else {
+            const errMessage = `The spelling for the term
+      ${originalTerm} seems incorrect, here are some suggestions :`;
+            suggestionMessage.innerHTML = errMessage;
+            const suggestionUL = document.createElement("ul");
+            suggestions.forEach((suggestion) => {
+                const suggestionLi = document.createElement("li");
+                suggestionLi.textContent = suggestion;
+                suggestionLi.addEventListener("click", () => {
+                    const textNode = new Text(suggestion);
+                    errorElement.replaceWith(textNode);
+                    this.contextMenu.style.display = "none";
+                    this.contextMenuOverlay.style.display = "none";
+                });
+                suggestionUL.appendChild(suggestionLi);
+            });
+            suggestionFragment.appendChild(suggestionMessage);
+            suggestionFragment.appendChild(suggestionUL);
+        }
+        errorMessage.appendChild(suggestionFragment);
+        const contextMenuFirstChild = this.contextMenuOptions.firstElementChild;
+        const errorJoiner = document.createDocumentFragment();
+        errorJoiner.append(errorMessage, document.createElement("hr"));
+        this.contextMenuOptions.insertBefore(errorJoiner, contextMenuFirstChild);
+        this.contextMenu.style.display = "block";
+        this.contextMenuOverlay.style.display = "block";
+    }
+    /** @description compares the passed term to one in the dictionary */
+    computeSuggestions(term) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const word = term.toLowerCase();
+            let filteredList = [];
+            if (term.length <= 5) {
+                filteredList = this.wordSet.filter((x) => x.startsWith(word[0]));
+            }
+            else {
+                filteredList = this.wordSet.filter((x) => x.startsWith(word.slice(0, 2)));
+            }
+            return yield this.computeSimilarity(term, filteredList);
+        });
+    }
+    /**
+     * @description computes the similarity between a word set and a word
+     */
+    computeSimilarity(term, list) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const suggestions = [];
+            for (let i = 0; i < list.length; i++) {
+                const distance = this.computeLevenstheinDistance(term, list[i]);
+                suggestions.push({ term: list[i], dif: distance });
+            }
+            return suggestions
+                .sort((a, b) => a.dif - b.dif)
+                .reverse()
+                .slice(0, 3);
+        });
+    }
+    /**
+     * @description computes the similarity between two strings using the Levensthein distance
      * @see https://rosettacode.org/wiki/Levenshtein_distance#TypeScript
      */
     computeLevenstheinDistance(first, second) {
@@ -1510,6 +1888,33 @@ class TextCorrection {
             t = u;
         }
         return 1 - u[n] / Math.max(m, n);
+    }
+    /**
+     * @description Gets the indices of where a string n appears.
+     * @see https://stackoverflow.com/questions/3410464
+     */
+    getIndicesOf(targetString, objectString) {
+        if (targetString.length === 0)
+            return [];
+        let startIndex, index = 0;
+        const indices = [];
+        while ((index = objectString.indexOf(targetString, startIndex)) > -1) {
+            indices.push(index);
+            startIndex = index + targetString.length;
+        }
+        return indices;
+    }
+    /**
+     * @description filters text nodes under an element
+     * @see https://stackoverflow.com/questions/10730309
+     */
+    filterTextNodesUnder(element) {
+        const children = [];
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode() !== null) {
+            children.push(walker.currentNode);
+        }
+        return children;
     }
 }
 
@@ -1574,8 +1979,8 @@ class Translations {
                     this.documentNames.add(t.document_initial_title);
                 });
             });
-            /** this.translations and this.documentNames might not exist yet */
-            this.instantiateLanguageSelection();
+            /** this.translations and this.documentNames might not exist yet FIXME: */
+            // this.instantiateLanguageSelection();
         }))();
     }
     /** @description fetches the .json file containing all translations */

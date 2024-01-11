@@ -6,6 +6,7 @@
 
 export default class Storage {
   editor: HTMLDivElement;
+  themeSelectContainer: HTMLUListElement;
   zoomInput: HTMLInputElement;
   zoomRangeInput: HTMLInputElement;
 
@@ -14,6 +15,7 @@ export default class Storage {
 
   constructor() {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
+    this.themeSelectContainer = document.querySelector("#theme-option-select-ul") as HTMLUListElement;
     this.zoomRangeInput = document.querySelector("#zoom-range") as HTMLInputElement;
     this.zoomInput = document.querySelector("#zoom-control-input") as HTMLInputElement;
     this.zoomAmount = 1;
@@ -39,11 +41,13 @@ export default class Storage {
 
     document.addEventListener("DOMContentLoaded", () => {
       const zoomLevel = localStorage.getItem("zoomLevel");
-      if (zoomLevel !== null) {
+      if (zoomLevel !== null && !Number.isNaN(parseInt(zoomLevel, 10))) {
         this.zoomAmount = parseInt(zoomLevel, 10);
         this.zoomRangeInput.value = `${this.zoomAmount / 100}`;
         this.zoomInput.value = `${this.zoomAmount}`;
         this.editor.style.scale = `${this.zoomAmount / 100}`;
+      } else {
+        this.editor.style.scale = "1";
       }
 
       const fetchedSettings = localStorage.getItem("Settings");
@@ -56,6 +60,17 @@ export default class Storage {
             {
               if (value === null) return;
               document.body.setAttribute("class", `${value}`);
+              const themeSelectLi = this.themeSelectContainer.querySelector(
+                `#${value}-theme-option`
+              ) as HTMLLIElement;
+              if (document.querySelector(".active-theme") === null) {
+                themeSelectLi.classList.add("active-theme");
+              } else {
+                const activeElement = document.querySelector(".active-theme");
+                if (!activeElement) return;
+                activeElement.classList.remove("active-theme");
+                themeSelectLi.classList.add("active-theme");
+              }
             }
             break;
 
