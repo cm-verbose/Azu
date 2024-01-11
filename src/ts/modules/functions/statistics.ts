@@ -31,7 +31,7 @@ export default class Statictics {
     this.configureWordCount();
   }
 
-  /** @description Count words at an interval TODO: Fix count*/
+  /** @description Count words at an interval */
   private configureWordCount() {
     let timer = setTimeout(() => {});
     this.editor.addEventListener("input", () => {
@@ -57,7 +57,7 @@ export default class Statictics {
     this.statisticsCover.style.display = "block";
     const content = this.editor.textContent;
     if (!content) {
-      return; // TODO:
+      return; 
     }
     const text = content
       .replace(/\s+/g, " ")
@@ -117,7 +117,6 @@ export default class Statictics {
     const context = graph.getContext("2d") as CanvasRenderingContext2D;
     graph.width = dimensions.width;
     graph.height = dimensions.height;
-
 
     const lineWidth = graph.width * 0.9;
     const lineHeight = graph.height / 25;
@@ -187,7 +186,7 @@ export default class Statictics {
             li.appendChild(span);
             const image = new Image(200);
             image.src = imageURL.href;
-            li.appendChild(document.createElement("br")); 
+            li.appendChild(document.createElement("br"));
             li.appendChild(image);
             statsList.appendChild(li);
           }

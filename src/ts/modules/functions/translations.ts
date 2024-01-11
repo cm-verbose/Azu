@@ -65,8 +65,8 @@ export default class Translations {
         });
       });
 
-      /** this.translations and this.documentNames might not exist yet */
-      this.instantiateLanguageSelection();
+      /** this.translations and this.documentNames might not exist yet FIXME: */
+      // this.instantiateLanguageSelection();
     })();
   }
 
@@ -104,7 +104,7 @@ export default class Translations {
     this.settingsThemesTitle.textContent = translationobj.settings.appearance.theme_title;
     this.settingsThemesLight.textContent = translationobj.settings.appearance.themes.light;
     this.settingsThemesDark.textContent = translationobj.settings.appearance.themes.dark;
-    ((this.settingsThemesSystem.querySelector("span") as HTMLSpanElement).childNodes[0] as Text) = 
+    ((this.settingsThemesSystem.querySelector("span") as HTMLSpanElement).childNodes[0] as Text) =
       translationobj.settings.appearance.themes.system;
     this.settingsThemesCustom.textContent = translationobj.settings.appearance.themes.custom;
   }

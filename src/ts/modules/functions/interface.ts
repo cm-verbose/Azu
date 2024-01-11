@@ -12,6 +12,7 @@ export default class UserInterface {
   zoomCurr: number;
   readonly MAX_ALLOWED_ZOOM: number;
   readonly MAX_TITLE_LENGTH: number;
+  readonly MIN_ALLOWED_ZOOM: number;
 
   constructor() {
     this.editor = document.querySelector("#editor") as HTMLDivElement;
@@ -23,7 +24,8 @@ export default class UserInterface {
       within the Storage class.
     */
     this.zoomCurr = parseInt(localStorage.getItem("zoomLevel") as string, 10) / 100;
-    this.MAX_ALLOWED_ZOOM = parseInt(this.zoomRangeInput.max);
+    this.MAX_ALLOWED_ZOOM = parseFloat(this.zoomRangeInput.max);
+    this.MIN_ALLOWED_ZOOM = parseFloat(this.zoomRangeInput.min); // TODO:
     this.MAX_TITLE_LENGTH = 50;
     this.instantiateUIEvents();
   }
@@ -59,10 +61,7 @@ export default class UserInterface {
 
     /* Different browsers usually have a different increment on zoom */
     const addedZoom: number = (e.deltaY * -1 < 0 ? -1 : 1) * 0.25;
-    if (
-      this.zoomCurr + addedZoom > this.MAX_ALLOWED_ZOOM ||
-      this.zoomCurr + addedZoom < parseFloat(this.zoomRangeInput.min)
-    )
+    if (this.zoomCurr + addedZoom > this.MAX_ALLOWED_ZOOM || this.zoomCurr + addedZoom < this.MIN_ALLOWED_ZOOM)
       return;
 
     this.zoomCurr += addedZoom;
@@ -100,11 +99,10 @@ export default class UserInterface {
   private handleInputZoom() {
     let previousZoom = this.zoomCurr;
     const zoomAmount: number = parseInt(this.zoomInput.value, 10) / 100;
-    const minZoom: number = parseFloat(this.zoomRangeInput.min);
     this.zoomCurr = zoomAmount >= this.MAX_ALLOWED_ZOOM ? this.MAX_ALLOWED_ZOOM : zoomAmount;
 
-    if (this.zoomCurr < minZoom) {
-      if (previousZoom < minZoom) previousZoom = 1;
+    if (this.zoomCurr < this.MIN_ALLOWED_ZOOM) {
+      if (previousZoom < this.MIN_ALLOWED_ZOOM) previousZoom = 1;
       this.zoomInput.value = `${previousZoom * 100}`;
       this.editor.style.scale = `${previousZoom}`;
       return;
@@ -121,7 +119,7 @@ export default class UserInterface {
 
   /** @description Enforces digit only input */
   private enforeDigitOnly(e: KeyboardEvent) {
-    if (!/Backspace|\d/g.test(e.key)) e.preventDefault();
+    if (!/Backspace|\d/g.test(e.code)) e.preventDefault();
   }
 
   /** @description If the title value is invalid, set the document title to "Unnamed" */
